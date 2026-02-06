@@ -1,0 +1,8 @@
+playwright>=1.40.0
+httpx>=0.25.0
+pyside6>=6.6.0
+
+# PyAutoGUI für bildbasierte Automation (Alternative zu Playwright-Klicks)
+pyautogui>=0.9.54
+pillow>=10.0.0
+opencv-python>=4.8.0

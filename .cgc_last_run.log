@@ -1,0 +1,1208 @@
+[0;32m
+╔═══════════════════════════════════════════════════════╗
+║                                                       ║
+║   CGC Tunee Download Manager                          ║
+║                                                       ║
+║   GUI: ./start.sh                                     ║
+║   CLI: ./start.sh --cli [URL]                         ║
+║                                                       ║
+╚═══════════════════════════════════════════════════════╝
+[0m
+
+[0;32mStarte GUI...[0m
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+
+============================================================
+STARTE MIT GESPEICHERTEM PROFIL
+============================================================
+
+Du solltest automatisch eingeloggt sein.
+Falls nicht: Login durchführen und ENTER drücken.
+
+============================================================
+
+Klicke auf 'All Music'...
+Songs gefunden via: text=/\d{2}:\d{2}/
+    Scanne Song-Liste (scrolle automatisch)...
+      ... 50 Songs gefunden
+    Scan abgeschlossen: 50 Songs
+
+  [Quiet Resolve] (02:54)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    2️⃣ Scrolle Song in View...
+    3️⃣ Hovere über Song...
+    4️⃣ Suche Download-Button...
+    ✅ Download-Button gefunden bei x=468, y=565
+    5️⃣ Klicke Download-Button...
+    6️⃣ Suche Modal-Buttons...
+    ✅ Modal geöffnet (MP3 bei x=640, y=581)
+    7️⃣ Klicke Downloads...
+       → MP3...
+       → RAW...
+       → LRC...
+       → VIDEO...
+    8️⃣ Warte auf Lyric Video Modal...
+    ✅ Lyric Video Download gefunden bei x=565, y=1004
+       → Klicke VIDEO Download...
+    ✅ VIDEO Download gestartet
+    9️⃣ Bewege Maus weg...
+    ✅ Alle Downloads erfolgreich!
+
+  [Carry You Without Your Name] (03:23)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    2️⃣ Scrolle Song in View...
+    3️⃣ Hovere über Song...
+    4️⃣ Suche Download-Button...
+    ✅ Download-Button gefunden bei x=468, y=565
+    5️⃣ Klicke Download-Button...
+    6️⃣ Suche Modal-Buttons...
+    ✅ Modal geöffnet (MP3 bei x=640, y=581)
+    7️⃣ Klicke Downloads...
+       → MP3...
+       → RAW...
+       → LRC...
+       → VIDEO...
+    8️⃣ Warte auf Lyric Video Modal...
+    ✅ Lyric Video Download gefunden bei x=565, y=1004
+       → Klicke VIDEO Download...
+    ✅ VIDEO Download gestartet
+    9️⃣ Bewege Maus weg...
+    ✅ Alle Downloads erfolgreich!
+
+  [Quiet Resolve] (04:54)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    2️⃣ Scrolle Song in View...
+    3️⃣ Hovere über Song...
+    4️⃣ Suche Download-Button...
+    ✅ Download-Button gefunden bei x=468, y=565
+    5️⃣ Klicke Download-Button...
+    6️⃣ Suche Modal-Buttons...
+    ✅ Modal geöffnet (MP3 bei x=640, y=581)
+    7️⃣ Klicke Downloads...
+       → MP3...
+       → RAW...
+       → LRC...
+       → VIDEO...
+    8️⃣ Warte auf Lyric Video Modal...
+    ✅ Lyric Video Download gefunden bei x=565, y=1004
+       → Klicke VIDEO Download...
+    ✅ VIDEO Download gestartet
+    9️⃣ Bewege Maus weg...
+    ✅ Alle Downloads erfolgreich!
+
+  [Carry You Without Your Name] (04:31)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    2️⃣ Scrolle Song in View...
+    3️⃣ Hovere über Song...
+    4️⃣ Suche Download-Button...
+    ❌ Download-Button nicht gefunden
+       Tipp: Ist der Song wirklich in View? Browser-Zoom 100%?
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Quiet Resolve] (04:40)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Carry You Without Your Name] (04:06)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Sacred Stains] (03:54)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Empty Saints] (04:07)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Sacred Stains] (04:23)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Empty Saints] (03:49)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Sacred Stains] (05:11)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Empty Saints] (04:16)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Weave Your Breath Into Vow] (03:01)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Broken Ground Bloom] (03:06)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Weave Your Laughter Into Prayer] (03:01)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Rise Through Broken Walls] (04:09)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Broken Walls Rise] (03:46)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Quiet Resolve] (03:59)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Midnight Chapel] (02:53)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Candle Vow] (02:31)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Echoes Keep What's Felt] (03:40)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Cathedral Dust] (03:53)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Cello and Breath] (02:38)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Ritual Arpeggio] (03:24)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Thunder in My Seams] (03:47)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Storm Where We Begin] (03:47)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+    ❌ Hybrid-Download fehlgeschlagen
+
+  [Learning How to Burn] (04:04)
+    🎯 Nutze Hybrid-Modus (PyAutoGUI)...
+    1️⃣ Suche Song in Liste...
+    ❌ Fehler: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/mnt/llm-data/projekte/cgc_tunee_download/src/browser.py", line 1816, in _download_song_hybrid
+    duration_elements = await self.page.locator(f'text="{duration}"').all()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/async_api/_generated.py", line 16802, in all
+    return mapping.from_impl_list(await self._impl_obj.all())
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 416, in all
+    for index in range(await self.count()):
+                       ^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py", line 423, in count
+    return await self._frame._query_count(self._selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 136, in _query_count
+    return await self._channel.send("queryCount", None, {"selector": selector})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/llm-data/projekte/cgc_tunee_download/.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Locator.all: Target page, context or browser has been closed
