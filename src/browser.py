@@ -15,9 +15,9 @@ try:
     pyautogui.FAILSAFE = True
     pyautogui.PAUSE = 0.5
     PYAUTOGUI_AVAILABLE = True
-except ImportError:
+except Exception as e:
     PYAUTOGUI_AVAILABLE = False
-    print("⚠️ PyAutoGUI nicht verfügbar - Hybrid-Modus deaktiviert")
+    print(f"⚠️ PyAutoGUI nicht verfügbar - Hybrid-Modus deaktiviert ({e})")
 
 # Download-Ordner (normaler Downloads-Ordner)
 DOWNLOADS_DIR = Path.home() / "Downloads" / "tunee"
@@ -1784,14 +1784,198 @@ class TuneeBrowser:
 
         return None
 
+    async def _viewport_to_screen(self, vp_x: float, vp_y: float) -> tuple[int, int]:
+        """
+        Konvertiert Playwright Viewport-Koordinaten zu Screen-Koordinaten.
+
+        PyAutoGUI arbeitet mit Screen-Koordinaten, Playwright mit Viewport-Koordinaten.
+        Mapping: Browser-Fenster-Position + Chrome-Titelleiste-Höhe.
+        """
+        try:
+            window_info = await self.page.evaluate('''() => ({
+                screenX: window.screenX,
+                screenY: window.screenY,
+                outerWidth: window.outerWidth,
+                outerHeight: window.outerHeight,
+                innerWidth: window.innerWidth,
+                innerHeight: window.innerHeight
+            })''')
+
+            # Chrome-Höhe (Tabs + Adressleiste) = outerHeight - innerHeight
+            chrome_height = window_info['outerHeight'] - window_info['innerHeight']
+
+            screen_x = int(window_info['screenX'] + vp_x)
+            screen_y = int(window_info['screenY'] + chrome_height + vp_y)
+
+            return screen_x, screen_y
+        except Exception as e:
+            print(f"    ⚠️ Viewport-to-Screen Fehler: {e}, nutze Fallback")
+            # Fallback: Nehme an, Fenster ist maximiert, Chrome-Höhe ~90px
+            return int(vp_x), int(vp_y + 90)
+
+    async def _screen_to_viewport(self, screen_x: int, screen_y: int) -> tuple[float, float]:
+        """Konvertiert Screen-Koordinaten zurück zu Viewport-Koordinaten."""
+        try:
+            window_info = await self.page.evaluate('''() => ({
+                screenX: window.screenX,
+                screenY: window.screenY,
+                outerHeight: window.outerHeight,
+                innerHeight: window.innerHeight
+            })''')
+            chrome_height = window_info['outerHeight'] - window_info['innerHeight']
+            vp_x = screen_x - window_info['screenX']
+            vp_y = screen_y - window_info['screenY'] - chrome_height
+            return float(vp_x), float(vp_y)
+        except Exception:
+            return float(screen_x), float(screen_y - 90)
+
+    async def _find_song_in_list(self, song_name: str, duration: str) -> tuple[int, int] | None:
+        """
+        Findet Song per Name+Duration in der Liste und gibt Screen-Koordinaten zurück.
+
+        1. Scrollt Liste ganz nach oben
+        2. Sucht per JS-Evaluate nach Song mit exaktem Name + Duration
+        3. Scrollt schrittweise runter bis Song im Viewport ist
+        4. Gibt Screen-Koordinaten (x, y) des Song-Centers zurück
+        """
+        try:
+            # 1. Scroll-Container finden und ganz nach oben scrollen
+            await self.page.evaluate('''() => {
+                const containers = document.querySelectorAll('div');
+                for (const c of containers) {
+                    const rect = c.getBoundingClientRect();
+                    if (rect.left < 400 && rect.width > 200 && rect.height > 300 &&
+                        c.scrollHeight > c.clientHeight + 10) {
+                        c.scrollTop = 0;
+                        return;
+                    }
+                }
+            }''')
+            await asyncio.sleep(0.5)
+
+            # 2. Suche Song per JS-Evaluate (Name + Duration Matching)
+            max_scroll_attempts = 50
+            for attempt in range(max_scroll_attempts):
+                result = await self.page.evaluate('''([searchName, searchDuration]) => {
+                    const timeRegex = /^\\d{2}:\\d{2}$/;
+                    const allElements = document.querySelectorAll('*');
+
+                    for (const el of allElements) {
+                        const text = el.textContent?.trim();
+                        if (text && timeRegex.test(text) && text === searchDuration && el.childNodes.length === 1) {
+                            const rect = el.getBoundingClientRect();
+                            if (rect.left > 400) continue;
+
+                            // Finde den Song-Container
+                            let container = el.parentElement;
+                            for (let i = 0; i < 5 && container; i++) {
+                                const cRect = container.getBoundingClientRect();
+                                if (cRect.height > 40 && cRect.height < 150) {
+                                    // Prüfe ob der Song-Name im Container vorkommt
+                                    const textNodes = container.querySelectorAll('span, div, p, a');
+                                    for (const node of textNodes) {
+                                        const nodeText = node.textContent?.trim();
+                                        if (nodeText && nodeText === searchName) {
+                                            // Song gefunden! Prüfe ob im Viewport
+                                            const viewportHeight = window.innerHeight;
+                                            if (cRect.top >= 0 && cRect.bottom <= viewportHeight) {
+                                                // Im Viewport - gebe Center-Koordinaten zurück
+                                                return {
+                                                    found: true,
+                                                    visible: true,
+                                                    x: cRect.left + cRect.width / 2,
+                                                    y: cRect.top + cRect.height / 2,
+                                                    top: cRect.top,
+                                                    bottom: cRect.bottom
+                                                };
+                                            } else {
+                                                return {
+                                                    found: true,
+                                                    visible: false,
+                                                    x: 0,
+                                                    y: 0,
+                                                    top: cRect.top,
+                                                    bottom: cRect.bottom
+                                                };
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
+                                container = container.parentElement;
+                            }
+                        }
+                    }
+                    return { found: false, visible: false, x: 0, y: 0, top: 0, bottom: 0 };
+                }''', [song_name, duration])
+
+                if result['found'] and result['visible']:
+                    # Song ist sichtbar - konvertiere zu Screen-Koordinaten
+                    screen_x, screen_y = await self._viewport_to_screen(result['x'], result['y'])
+                    print(f"    ✅ Song gefunden im Viewport (Screen: {screen_x}, {screen_y})")
+                    return screen_x, screen_y
+
+                if result['found'] and not result['visible']:
+                    # Song gefunden aber nicht im Viewport - scrolle ihn in View
+                    await self.page.evaluate('''(targetTop) => {
+                        const containers = document.querySelectorAll('div');
+                        for (const c of containers) {
+                            const rect = c.getBoundingClientRect();
+                            if (rect.left < 400 && rect.width > 200 && rect.height > 300 &&
+                                c.scrollHeight > c.clientHeight + 10) {
+                                // Scrolle so dass das Element in der Mitte ist
+                                c.scrollTop += targetTop - rect.height / 2;
+                                return;
+                            }
+                        }
+                    }''', result['top'])
+                    await asyncio.sleep(0.3)
+                    continue
+
+                # Song nicht gefunden - weiterscrollen
+                scrolled = await self.page.evaluate('''() => {
+                    const containers = document.querySelectorAll('div');
+                    for (const c of containers) {
+                        const rect = c.getBoundingClientRect();
+                        if (rect.left < 400 && rect.width > 200 && rect.height > 300 &&
+                            c.scrollHeight > c.clientHeight + 10) {
+                            const oldTop = c.scrollTop;
+                            c.scrollTop += 150;
+                            return c.scrollTop > oldTop;
+                        }
+                    }
+                    return false;
+                }''')
+
+                if not scrolled:
+                    # Ende der Liste erreicht
+                    print(f"    ❌ Song '{song_name}' ({duration}) nicht in Liste gefunden (Ende erreicht)")
+                    return None
+
+                await asyncio.sleep(0.3)
+
+            print(f"    ❌ Song '{song_name}' ({duration}) nicht gefunden (max Scroll-Versuche)")
+            return None
+
+        except Exception as e:
+            print(f"    ❌ Fehler bei Song-Suche: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
+
     async def _download_song_hybrid(self, song: dict) -> bool:
         """
-        Hybrid Download: Playwright findet Song → PyAutoGUI klickt.
+        Download per reinem Playwright (CDP) - funktioniert auch auf KVM/VM.
+
+        Alles über page.mouse/page.evaluate - kein PyAutoGUI für Klicks nötig.
 
         Workflow:
-        1. Playwright scrollt Song in View
-        2. PyAutoGUI findet & klickt Download-Button (bildbasiert)
-        3. PyAutoGUI klickt Modal-Buttons (position-basiert)
+        1. _find_song_in_list(name, duration) - Song per JS finden + scrollen
+        2. page.mouse.move() - Hover (triggert CSS :hover über CDP)
+        3. JS-Evaluate findet Download-Button in Song-Zeile
+        4. page.mouse.click() - Klick (triggert React Events über CDP)
+        5. JS-Evaluate findet Modal-Buttons → Klick per position-offset
+        6. Aufräumen
 
         Args:
             song: {'name': str, 'duration': str}
@@ -1799,105 +1983,247 @@ class TuneeBrowser:
         Returns:
             True wenn erfolgreich
         """
-        if not PYAUTOGUI_AVAILABLE:
-            print("    ❌ PyAutoGUI nicht verfügbar")
-            return False
-
         song_name = song['name']
         duration = song['duration']
 
-        MODAL_WAIT = 2.0
-        DOWNLOAD_WAIT = 2.0
-        LYRIC_VIDEO_WAIT = 3.0
+        MODAL_WAIT = 2.5
+        DOWNLOAD_WAIT = 2.5
+        LYRIC_VIDEO_WAIT = 4.0
 
         try:
-            # 1. Finde Song in Liste (per Duration - eindeutig!)
-            print(f"    1️⃣ Suche Song in Liste...")
-            duration_elements = await self.page.locator(f'text="{duration}"').all()
+            # 1. Finde Song in Liste per Name + Duration
+            print(f"    1️⃣ Suche Song '{song_name}' ({duration}) in Liste...")
+            song_coords = await self._find_song_in_list(song_name, duration)
 
-            if not duration_elements:
-                print(f"    ❌ Song nicht gefunden (Duration: {duration})")
+            if not song_coords:
+                print(f"    ❌ Song nicht gefunden in Liste")
                 return False
 
-            song_element = duration_elements[0]
+            song_x, song_y = song_coords
+            # Konvertiere Screen→Viewport für Playwright
+            song_vp_x, song_vp_y = await self._screen_to_viewport(song_x, song_y)
 
-            # 2. Scrolle Song in View
-            print(f"    2️⃣ Scrolle Song in View...")
-            await song_element.scroll_into_view_if_needed()
-            await asyncio.sleep(1)
+            # 2. Hover über Song per Playwright (CDP - KVM-sicher)
+            print(f"    2️⃣ Hover über Song VP({song_vp_x:.0f},{song_vp_y:.0f})...")
+            await self.page.mouse.move(song_vp_x, song_vp_y)
+            await asyncio.sleep(1.5)
 
-            # 3. WICHTIG: Hovere über Song um nur seinen Button sichtbar zu machen!
-            print(f"    3️⃣ Hovere über Song...")
-            await song_element.hover()
-            await asyncio.sleep(1.5)  # Warte bis Button erscheint
+            # 3. Finde Download-Button per JS-Evaluate
+            print(f"    3️⃣ Suche Download-Button im DOM...")
+            dl_buttons = await self.page.evaluate('''(songY) => {
+                const candidates = [];
+                const allEls = document.querySelectorAll('button, [role="button"], a, svg, [class*="icon"]');
+                for (const el of allEls) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width <= 0 || rect.width > 50 || rect.height > 50) continue;
+                    if (rect.width < 8 || rect.height < 8) continue;
+                    if (Math.abs(rect.top + rect.height/2 - songY) > 30) continue;
+                    const html = el.outerHTML?.toLowerCase() || '';
+                    const ariaLabel = (el.getAttribute('aria-label') || '').toLowerCase();
+                    const hasStar = html.includes('star') || html.includes('favorite') || html.includes('fav');
+                    candidates.push({
+                        x: rect.left + rect.width/2,
+                        y: rect.top + rect.height/2,
+                        w: rect.width, h: rect.height,
+                        right: rect.right,
+                        tag: el.tagName,
+                        hasStar: hasStar
+                    });
+                }
+                candidates.sort((a, b) => a.x - b.x);
+                return candidates;
+            }''', song_vp_y)
 
-            # 4. Finde Download-Button (PyAutoGUI - bildbasiert)
-            # JETZT ist nur der Button vom aktuellen Song sichtbar!
-            print(f"    4️⃣ Suche Download-Button...")
-            download_btn = self._find_template("download_button", confidence=0.8, timeout=3)
-
-            if not download_btn:
-                print(f"    ❌ Download-Button nicht gefunden")
-                print(f"       Tipp: Ist der Song wirklich in View? Browser-Zoom 100%?")
+            # Download-Button ist der rechteste nicht-Stern Button
+            dl_btn = None
+            if dl_buttons:
+                non_star = [b for b in dl_buttons if not b['hasStar']]
+                if non_star:
+                    dl_btn = non_star[-1]  # Rechtester
+                else:
+                    dl_btn = dl_buttons[-1]
+                print(f"    ✅ {len(dl_buttons)} Elemente, Download-Button: VP({dl_btn['x']:.0f},{dl_btn['y']:.0f})")
+            else:
+                print(f"    ❌ Keine Buttons in Song-Zeile gefunden")
                 return False
 
-            print(f"    ✅ Download-Button gefunden bei x={download_btn[0]}, y={download_btn[1]}")
+            # 4. Klicke Download-Button per Playwright
+            # WICHTIG: Nach dem Klick NICHT die Maus bewegen! Modal schliesst sich sonst.
+            print(f"    4️⃣ Klicke Download-Button VP({dl_btn['x']:.0f},{dl_btn['y']:.0f})...")
+            await self.page.mouse.click(dl_btn['x'], dl_btn['y'])
+            await asyncio.sleep(MODAL_WAIT + 1)  # Etwas länger warten
 
-            # 5. Klicke Download-Button → Modal öffnet
-            print(f"    5️⃣ Klicke Download-Button...")
-            pyautogui.click(download_btn[0], download_btn[1])
-            await asyncio.sleep(MODAL_WAIT)
+            # 5. Prüfe ob Modal offen ist (suche MP3 im DOM)
+            print(f"    5️⃣ Suche Download-Modal...")
+            modal_buttons = await self.page.evaluate('''() => {
+                const labels = ['MP3', 'RAW', 'VIDEO', 'LRC'];
+                const results = {};
+                const allEls = document.querySelectorAll('*');
+                for (const el of allEls) {
+                    const text = el.textContent?.trim();
+                    if (!text || !labels.includes(text) || el.childNodes.length > 2) continue;
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width <= 0 || rect.height <= 0 || rect.left <= 0) continue;
+                    // Finde die zugehörige klickbare Zeile/Button
+                    let row = el;
+                    for (let i = 0; i < 8; i++) {
+                        const p = row.parentElement;
+                        if (!p) break;
+                        const pRect = p.getBoundingClientRect();
+                        if (pRect.width > 150 && pRect.height > 25 && pRect.height < 100) {
+                            // Suche Download-Button in dieser Zeile
+                            const btns = p.querySelectorAll('button, [role="button"], a');
+                            for (const btn of btns) {
+                                const bRect = btn.getBoundingClientRect();
+                                const bText = (btn.textContent?.trim() || '').toLowerCase();
+                                if (bRect.width > 30 && bText.includes('download')) {
+                                    results[text] = {
+                                        x: bRect.left + bRect.width/2,
+                                        y: bRect.top + bRect.height/2,
+                                        rowX: pRect.left + pRect.width/2,
+                                        rowY: pRect.top + pRect.height/2
+                                    };
+                                    break;
+                                }
+                            }
+                            if (!results[text]) {
+                                // Fallback: rechte Seite der Zeile
+                                results[text] = {
+                                    x: pRect.right - 60,
+                                    y: pRect.top + pRect.height/2,
+                                    rowX: pRect.left + pRect.width/2,
+                                    rowY: pRect.top + pRect.height/2
+                                };
+                            }
+                            break;
+                        }
+                        row = p;
+                    }
+                }
+                return Object.keys(results).length > 0 ? results : null;
+            }''')
 
-            # 6. Finde MP3-Button im Modal (für Position)
-            print(f"    6️⃣ Suche Modal-Buttons...")
-            mp3_location = self._find_template("modal_mp3", confidence=0.85, timeout=3)
+            if not modal_buttons:
+                # Retry: Nochmal klick OHNE Mausbewegung (Modal schliesst sich sonst!)
+                print(f"    ⚠️ Modal nicht offen, retry (nur klick, keine Mausbewegung)...")
+                await self.page.mouse.click(dl_btn['x'], dl_btn['y'])
+                await asyncio.sleep(MODAL_WAIT + 2)  # Noch länger warten
 
-            if not mp3_location:
-                print(f"    ❌ Modal nicht geöffnet (MP3 nicht gefunden)")
+                modal_buttons = await self.page.evaluate('''() => {
+                    const labels = ['MP3', 'RAW', 'VIDEO', 'LRC'];
+                    const results = {};
+                    const allEls = document.querySelectorAll('*');
+                    for (const el of allEls) {
+                        const text = el.textContent?.trim();
+                        if (!text || !labels.includes(text) || el.childNodes.length > 2) continue;
+                        const rect = el.getBoundingClientRect();
+                        if (rect.width <= 0 || rect.height <= 0 || rect.left <= 0) continue;
+                        let row = el;
+                        for (let i = 0; i < 8; i++) {
+                            const p = row.parentElement;
+                            if (!p) break;
+                            const pRect = p.getBoundingClientRect();
+                            if (pRect.width > 150 && pRect.height > 25 && pRect.height < 100) {
+                                const btns = p.querySelectorAll('button, [role="button"], a');
+                                for (const btn of btns) {
+                                    const bRect = btn.getBoundingClientRect();
+                                    const bText = (btn.textContent?.trim() || '').toLowerCase();
+                                    if (bRect.width > 30 && bText.includes('download')) {
+                                        results[text] = {x: bRect.left + bRect.width/2, y: bRect.top + bRect.height/2};
+                                        break;
+                                    }
+                                }
+                                if (!results[text]) {
+                                    results[text] = {x: pRect.right - 60, y: pRect.top + pRect.height/2};
+                                }
+                                break;
+                            }
+                            row = p;
+                        }
+                    }
+                    return Object.keys(results).length > 0 ? results : null;
+                }''')
+
+            if not modal_buttons:
+                print(f"    ❌ Download-Modal nicht geöffnet")
                 return False
 
-            print(f"    ✅ Modal geöffnet (MP3 bei x={mp3_location[0]}, y={mp3_location[1]})")
+            print(f"    ✅ Modal offen! Buttons: {list(modal_buttons.keys())}")
 
-            # 7. Klicke Modal-Buttons (position-basiert mit PyAutoGUI)
-            # Modal-Reihenfolge: MP3, RAW, VIDEO, LRC
-            # Klick-Reihenfolge: MP3, RAW, LRC, VIDEO (VIDEO zuletzt!)
-            offset_x = 150  # Offset zum Download-Button
-
-            buttons = [
-                ("MP3", 0),      # Zeile 1
-                ("RAW", 100),    # Zeile 2
-                ("LRC", 300),    # Zeile 4
-                ("VIDEO", 200),  # Zeile 3
+            # 6. Klicke Downloads: MP3 → RAW → LRC (per Playwright)
+            click_order = [
+                ("MP3", modal_buttons.get('MP3')),
+                ("RAW", modal_buttons.get('RAW')),
+                ("LRC", modal_buttons.get('LRC')),
             ]
 
-            print(f"    7️⃣ Klicke Downloads...")
-            for label, y_offset in buttons:
-                click_x = mp3_location[0] + offset_x
-                click_y = mp3_location[1] + y_offset
+            print(f"    6️⃣ Klicke Downloads (MP3 → RAW → LRC)...")
+            for label, pos in click_order:
+                if pos:
+                    print(f"       → {label} VP({pos['x']:.0f},{pos['y']:.0f})...")
+                    await self.page.mouse.click(pos['x'], pos['y'])
+                    await asyncio.sleep(DOWNLOAD_WAIT)
+                else:
+                    print(f"       → {label} nicht im Modal gefunden (skip)")
 
-                print(f"       → {label}...")
-                pyautogui.click(click_x, click_y)
-                await asyncio.sleep(DOWNLOAD_WAIT)
+            # 7. VIDEO klicken (öffnet Lyric Video Modal)
+            video_pos = modal_buttons.get('VIDEO')
+            if video_pos:
+                print(f"    7️⃣ Klicke VIDEO VP({video_pos['x']:.0f},{video_pos['y']:.0f})...")
+                await self.page.mouse.click(video_pos['x'], video_pos['y'])
+                await asyncio.sleep(LYRIC_VIDEO_WAIT)
 
-            # 8. Lyric Video Modal (nach VIDEO-Klick)
-            print(f"    8️⃣ Warte auf Lyric Video Modal...")
-            await asyncio.sleep(LYRIC_VIDEO_WAIT)
+                # 8. Lyric Video Modal - Download-Button per JS finden
+                print(f"    8️⃣ Suche Lyric Video Download-Button...")
+                lyric_dl = await self.page.evaluate('''() => {
+                    const btns = document.querySelectorAll('button, a, [role="button"]');
+                    for (const btn of btns) {
+                        const text = (btn.textContent?.trim() || '').toLowerCase();
+                        const rect = btn.getBoundingClientRect();
+                        if (rect.width > 60 && rect.height > 20 && rect.width < 300 && rect.height < 80 &&
+                            rect.top > 300 && text === 'download') {
+                            return {x: rect.left + rect.width/2, y: rect.top + rect.height/2};
+                        }
+                    }
+                    return null;
+                }''')
 
-            lyric_btn = self._find_template("lyric_video_download", confidence=0.85, timeout=3)
-
-            if lyric_btn:
-                print(f"    ✅ Lyric Video Download gefunden bei x={lyric_btn[0]}, y={lyric_btn[1]}")
-                print(f"       → Klicke VIDEO Download...")
-                pyautogui.click(lyric_btn[0], lyric_btn[1])
-                await asyncio.sleep(DOWNLOAD_WAIT)
-                print(f"    ✅ VIDEO Download gestartet")
+                if lyric_dl:
+                    print(f"    ✅ Lyric Download VP({lyric_dl['x']:.0f},{lyric_dl['y']:.0f})")
+                    await self.page.mouse.click(lyric_dl['x'], lyric_dl['y'])
+                    await asyncio.sleep(DOWNLOAD_WAIT)
+                    print(f"    ✅ VIDEO Download gestartet")
+                else:
+                    print(f"    ⚠️ Lyric Video Download-Button nicht gefunden (skip)")
             else:
-                print(f"    ⚠️ Lyric Video Download nicht gefunden (skip)")
+                print(f"    ⚠️ VIDEO nicht im Modal (skip)")
 
-            # WICHTIG: Bewege Maus weg damit beim nächsten Song keine alten Buttons sichtbar sind!
-            print(f"    9️⃣ Bewege Maus weg...")
-            pyautogui.moveTo(10, 10)
+            # 9. Aufräumen: Escape, Maus weg, Scroll-Reset
+            print(f"    9️⃣ Aufräumen...")
+            await self.page.keyboard.press('Escape')
             await asyncio.sleep(0.5)
+            await self.page.keyboard.press('Escape')
+            await asyncio.sleep(0.5)
+            await self.page.keyboard.press('Escape')
+            await asyncio.sleep(0.3)
+
+            # Maus wegbewegen per Playwright
+            await self.page.mouse.move(10, 10)
+            await asyncio.sleep(0.5)
+
+            # Song-Liste zurück nach oben scrollen
+            await self.page.evaluate('''() => {
+                const containers = document.querySelectorAll('div');
+                for (const c of containers) {
+                    const rect = c.getBoundingClientRect();
+                    if (rect.left < 400 && rect.width > 200 && rect.height > 300 &&
+                        c.scrollHeight > c.clientHeight + 10) {
+                        c.scrollTop = 0;
+                        return;
+                    }
+                }
+            }''')
+            await asyncio.sleep(0.3)
 
             print(f"    ✅ Alle Downloads erfolgreich!")
             return True
@@ -1906,9 +2232,9 @@ class TuneeBrowser:
             print(f"    ❌ Fehler: {e}")
             import traceback
             traceback.print_exc()
-            # Auch bei Fehler: Maus wegbewegen
             try:
-                pyautogui.moveTo(10, 10)
+                await self.page.keyboard.press('Escape')
+                await self.page.mouse.move(10, 10)
             except:
                 pass
             return False

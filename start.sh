@@ -53,6 +53,40 @@ fi
 # Verzeichnisse erstellen
 mkdir -p cookies downloads
 
+# tkinter prüfen (benötigt für PyAutoGUI/mouseinfo)
+if ! python3 -c "import tkinter" 2>/dev/null; then
+    echo -e "${YELLOW}python3-tk fehlt (benötigt für PyAutoGUI)${NC}"
+    if command -v apt-get &>/dev/null; then
+        echo -e "${YELLOW}Installiere python3-tk...${NC}"
+        sudo apt-get install -y python3-tk -qq
+        # venv neu erstellen damit tkinter verfügbar wird
+        echo -e "${YELLOW}Erstelle Virtual Environment neu (tkinter-Support)...${NC}"
+        rm -rf "$VENV_DIR"
+        python3 -m venv "$VENV_DIR"
+        source "$VENV_DIR/bin/activate"
+        pip install --upgrade pip -q
+        pip install -r requirements.txt -q
+        playwright install chromium
+        touch "$VENV_DIR/.installed"
+    else
+        echo -e "${RED}Bitte manuell installieren: sudo apt-get install python3-tk${NC}"
+    fi
+fi
+
+# XWayland xauth-Fix: python-xlib findet den Cookie nicht wenn das
+# Display-Feld in der Xauthority leer ist (typisch bei Wayland/Mutter).
+# Wir kopieren den Cookie mit explizitem Display-Nummer :0.
+if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ -n "$XAUTHORITY" ] && [ -n "$DISPLAY" ]; then
+    COOKIE=$(xauth -f "$XAUTHORITY" list 2>/dev/null | head -1 | awk '{print $3}')
+    if [ -n "$COOKIE" ]; then
+        # Prüfen ob der Eintrag mit Display-Nummer schon existiert
+        if ! xauth list 2>/dev/null | grep -q "unix${DISPLAY}"; then
+            xauth add "$DISPLAY" MIT-MAGIC-COOKIE-1 "$COOKIE" 2>/dev/null
+            echo -e "${YELLOW}XWayland xauth-Fix angewendet (Display ${DISPLAY})${NC}"
+        fi
+    fi
+fi
+
 # App starten (expliziter Pfad zum venv-Python verhindert Konflikte mit cgc_launcher)
 echo ""
 

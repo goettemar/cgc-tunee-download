@@ -13,28 +13,20 @@ Dieses Verzeichnis enthält Template-Screenshots für bildbasierte Automation mi
 
 2. **modal_mp3.png** - MP3 Button im Download-Modal
    - Text "MP3" + Icon
-   - Erster Button im Modal
+   - Erster Button im Modal (dient als Positionsanker für alle anderen Buttons)
    - Screenshot: Der komplette Button
 
-3. **modal_raw.png** - RAW/FLAC Button im Download-Modal
-   - Text "RAW" oder ähnlich
-   - Zweiter Button im Modal
-   - Screenshot: Der komplette Button
-
-4. **modal_video.png** - VIDEO Button im Download-Modal
-   - Text "VIDEO" + Icon
-   - Dritter Button im Modal
-   - Screenshot: Der komplette Button
-
-5. **modal_lrc.png** - LRC Button im Download-Modal
-   - Text "LRC" + Icon
-   - Vierter Button im Modal
-   - Screenshot: Der komplette Button (kann ausgegraut sein)
-
-6. **lyric_video_download.png** - Download-Button im Lyric Video Modal
+3. **lyric_video_download.png** - Download-Button im Lyric Video Modal
    - Öffnet sich nach Klick auf VIDEO-Button
    - Download-Button oben rechts im Modal
    - Screenshot: Der komplette Button
+
+### Nicht mehr benötigt (position-basiert über MP3-Anker)
+
+Die folgenden Templates sind **optional** - RAW, VIDEO und LRC werden über
+Position-Offsets relativ zur MP3-Position geklickt:
+- MP3 (+0px), RAW (+100px), VIDEO (+200px), LRC (+300px)
+- `modal_raw.png`, `modal_video.png`, `modal_lrc.png` werden nicht mehr gesucht
 
 ## Screenshots erstellen
 
@@ -55,7 +47,7 @@ flameshot gui
 1. Hover über Song → Download-Button erscheint
 2. Screenshot vom Button → `download_button.png`
 3. Klick auf Download-Button → Modal öffnet
-4. Screenshot von jedem Button → `modal_*.png`
+4. Screenshot vom MP3-Button → `modal_mp3.png`
 5. Klick auf VIDEO → Lyric Video Modal
 6. Screenshot vom Download-Button → `lyric_video_download.png`
 
@@ -66,14 +58,23 @@ python create_templates.py
 
 Das Script öffnet Tunee, zeigt wo geklickt werden soll, und erstellt automatisch Screenshots.
 
+## Multi-Song-Workflow
+
+Der neue Workflow findet jeden Song per **Name + Duration** (nicht nur Duration):
+1. Song-Liste wird per JS-Evaluate durchsucht (exakter Name-Match)
+2. Liste scrollt automatisch bis der Song im Viewport sichtbar ist
+3. PyAutoGUI bewegt die echte Maus zum Song (triggert CSS :hover)
+4. Template-Matching findet den Download-Button
+5. Nach jedem Song: Modals schließen, Maus wegbewegen, Liste zurückscrollen
+
 ## Template-Qualität
 
 **Wichtig für gutes Matching:**
-- ✅ Scharfe Screenshots (kein Blur)
-- ✅ Nur der Button (nicht zu viel Hintergrund)
-- ✅ Normal-State (nicht pressed/active)
-- ✅ 100% Zoom im Browser
-- ⚠️ Keine Schatten/Highlights wenn möglich
+- Scharfe Screenshots (kein Blur)
+- Nur der Button (nicht zu viel Hintergrund)
+- Normal-State (nicht pressed/active)
+- 100% Zoom im Browser
+- Keine Schatten/Highlights wenn möglich
 
 ## Testen
 

@@ -16,7 +16,7 @@ try:
     # Sicherheitseinstellungen für PyAutoGUI
     pyautogui.FAILSAFE = True  # Maus in obere linke Ecke = Notfall-Stop
     pyautogui.PAUSE = 0.5  # Pause zwischen Actions
-except ImportError as e:
+except Exception as e:
     print(f"⚠️ PyAutoGUI Import-Warnung: {e}")
     print("   Kernfunktionen sollten trotzdem funktionieren...")
     import sys
