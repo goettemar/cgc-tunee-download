@@ -12,7 +12,7 @@ import sys
 import time
 
 from src.vlm import check_ollama_running, check_model_available, MODEL
-from src.orchestrator import run_task, TASK_DOWNLOAD_ALL
+from src.orchestrator import run_task, run_task_freeform
 from src.screenshot import set_monitor, list_monitors
 
 CHROME_PROFILE = os.path.join(os.path.dirname(__file__), "cookies", "chrome_profile")
@@ -135,8 +135,11 @@ def main():
 
     print()
 
-    # Run agent
-    success = run_task(task=args.task, max_steps=args.steps)
+    # Run agent — state machine for default download, freeform for custom tasks
+    if args.task:
+        success = run_task_freeform(task=args.task, max_steps=args.steps)
+    else:
+        success = run_task(max_steps=args.steps)
 
     if chrome_proc:
         print("[INFO] Chrome is still running — close manually when done.")

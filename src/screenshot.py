@@ -36,10 +36,11 @@ def get_screen_size() -> tuple[int, int]:
         return mon["width"], mon["height"]
 
 
-# Max image dimension sent to VLM — smaller = faster + more consistent.
+# Max image dimension sent to VLM.
 # UI-TARS coordinates will be in this resized space.
-MAX_VLM_WIDTH = 1280
-MAX_VLM_HEIGHT = 720
+# Higher res = better for small UI elements, but slower inference.
+MAX_VLM_WIDTH = 1920
+MAX_VLM_HEIGHT = 1080
 
 
 def take_screenshot() -> tuple[str, tuple[int, int]]:

@@ -24,6 +24,12 @@ Action: <exactly one action call>
 - drag(start_box='<|box_start|>(x1,y1)<|box_end|>', end_box='<|box_start|>(x2,y2)<|box_end|>')
 - wait()
 - finished(content='summary of what was done')
+
+## Rules
+- NEVER repeat the same action twice in a row. If your last action was a click at some position, do NOT click the same position again.
+- NEVER call wait() after a click. The system already waits between steps.
+- Look at the screenshot carefully. If a button has already been clicked (downloaded), move to the NEXT button.
+- Each action should be DIFFERENT from the previous one.
 """
 
 PARAMETER num_ctx 4096
