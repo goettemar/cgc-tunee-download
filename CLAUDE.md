@@ -53,16 +53,19 @@ abs_y = round(screen_height * y / 1000)
 ```
 
 ### Download-Workflow pro Song:
-1. Hover über Song-Zeile → Download-Icons erscheinen
-2. Download-Icon klicken → Modal öffnet sich
-3. MP3 Download → RAW Download → LRC Download
-4. Modal schließen → nächster Song
+1. Hover über Song-Zeile → Download-Icons erscheinen (normalerweise hidden)
+2. Download-Icon (Pfeil nach unten) klicken → Download-Modal öffnet sich
+3. Modal hat 4 Buttons: MP3 Download, RAW Download, VIDEO, LRC Download
+4. Reihenfolge: **MP3 → RAW → LRC → VIDEO** (VIDEO zuletzt!)
+5. LRC: Falls ausgegraut → Song ist Instrumental, überspringen
+6. VIDEO: Öffnet zweites Modal mit Download-Button → Klick startet Download
+   → Schließt BEIDE Modals automatisch → Nächster Song
 
 ## Systemvoraussetzungen
 
 - **GPU**: NVIDIA RTX PRO 4500 (32GB VRAM)
 - **Ollama**: `sudo snap start ollama.ollama`
-- **Model**: `ollama pull 0000/ui-tars-1.5-7b` (~15GB)
+- **Model**: `ollama pull 0000/ui-tars-1.5-7b` (~15GB), dann `ollama create ui-tars-gui -f Modelfile`
 - **Display**: X11 :0
 - **Python**: 3.12+, PyAutoGUI braucht `python3-tk`
 
@@ -99,4 +102,8 @@ cd /mnt/llm-data/projekte/cgc_tunee_download
 - **Ollama cold-start**: Model laden dauert ~30s beim ersten Aufruf
 - **Inference-Speed**: ~5-10s pro VLM-Aufruf (7B auf RTX PRO 4500)
 - **PyAutoGUI FAILSAFE**: Maus in obere linke Ecke (0,0) = Abbruch
-- **History-Limit**: Letzte 20 Nachrichten werden als Kontext mitgegeben
+- **History-Limit**: Letzte 10 Actions als Kontext
+- **Multi-Monitor**: `--monitor N` wählt den Monitor (1=primary)
+- **Modelfile**: Das Original-Ollama-Model hat ein kaputtes Template (`{{ .Prompt }}`), daher custom `ui-tars-gui` mit Qwen2.5VL Chat-Template
+- **Gotcha**: Songs mit gleichem Titel aber unterschiedlicher Länge → später: Ordner `Titel_Länge`
+- **Gotcha**: Instrumentals haben LRC ausgegraut → später: leere .lrc mit "This is an instrumental"
