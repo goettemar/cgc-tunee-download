@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# CGC Tunee Download — VLM Agent Launcher
+# CGC Tunee Download - Start Script
 #
 
 set -e
@@ -14,14 +14,15 @@ VENV_DIR=".venv"
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
-CYAN='\033[0;36m'
 NC='\033[0m'
 
-echo -e "${CYAN}"
+echo -e "${GREEN}"
 echo "╔═══════════════════════════════════════════════════════╗"
 echo "║                                                       ║"
-echo "║   CGC Tunee Download — VLM Agent                      ║"
-echo "║   Model: UI-TARS 1.5 7B via Ollama                   ║"
+echo "║   CGC Tunee Download Manager                          ║"
+echo "║                                                       ║"
+echo "║   GUI: ./start.sh                                     ║"
+echo "║   CLI: ./start.sh --cli [URL]                         ║"
 echo "║                                                       ║"
 echo "╚═══════════════════════════════════════════════════════╝"
 echo -e "${NC}"
@@ -32,22 +33,27 @@ if [ ! -d "$VENV_DIR" ]; then
     python3 -m venv "$VENV_DIR"
 fi
 
-# Aktivieren
+# Aktivieren (nur für pip install, nicht für exec)
 source "$VENV_DIR/bin/activate"
 
 # Abhängigkeiten prüfen/installieren
-if [ ! -f "$VENV_DIR/.vlm_installed" ]; then
+if [ ! -f "$VENV_DIR/.installed" ]; then
     echo -e "${YELLOW}Installiere Abhängigkeiten...${NC}"
     pip install --upgrade pip -q
     pip install -r requirements.txt -q
-    touch "$VENV_DIR/.vlm_installed"
+
+    # Playwright Browser installieren
+    echo -e "${YELLOW}Installiere Playwright Browser...${NC}"
+    playwright install chromium
+
+    touch "$VENV_DIR/.installed"
     echo -e "${GREEN}Installation abgeschlossen.${NC}"
 fi
 
 # Verzeichnisse erstellen
 mkdir -p cookies downloads
 
-# tkinter prüfen (benötigt für PyAutoGUI)
+# tkinter prüfen (benötigt für PyAutoGUI/mouseinfo)
 if ! python3 -c "import tkinter" 2>/dev/null; then
     echo -e "${YELLOW}python3-tk fehlt (benötigt für PyAutoGUI)${NC}"
     if command -v apt-get &>/dev/null; then
@@ -60,16 +66,20 @@ if ! python3 -c "import tkinter" 2>/dev/null; then
         source "$VENV_DIR/bin/activate"
         pip install --upgrade pip -q
         pip install -r requirements.txt -q
-        touch "$VENV_DIR/.vlm_installed"
+        playwright install chromium
+        touch "$VENV_DIR/.installed"
     else
         echo -e "${RED}Bitte manuell installieren: sudo apt-get install python3-tk${NC}"
     fi
 fi
 
-# XWayland xauth-Fix
+# XWayland xauth-Fix: python-xlib findet den Cookie nicht wenn das
+# Display-Feld in der Xauthority leer ist (typisch bei Wayland/Mutter).
+# Wir kopieren den Cookie mit explizitem Display-Nummer :0.
 if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ -n "$XAUTHORITY" ] && [ -n "$DISPLAY" ]; then
     COOKIE=$(xauth -f "$XAUTHORITY" list 2>/dev/null | head -1 | awk '{print $3}')
     if [ -n "$COOKIE" ]; then
+        # Prüfen ob der Eintrag mit Display-Nummer schon existiert
         if ! xauth list 2>/dev/null | grep -q "unix${DISPLAY}"; then
             xauth add "$DISPLAY" MIT-MAGIC-COOKIE-1 "$COOKIE" 2>/dev/null
             echo -e "${YELLOW}XWayland xauth-Fix angewendet (Display ${DISPLAY})${NC}"
@@ -77,27 +87,15 @@ if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ -n "$XAUTHORITY" ] && [ -n "$DISPLAY
     fi
 fi
 
-# Ollama-Status prüfen
+# App starten (expliziter Pfad zum venv-Python verhindert Konflikte mit cgc_launcher)
 echo ""
-if command -v ollama &>/dev/null; then
-    if ollama list 2>/dev/null | grep -q "ui-tars"; then
-        echo -e "${GREEN}Ollama läuft + UI-TARS Modell verfügbar${NC}"
-    elif curl -sf http://localhost:11434/api/tags >/dev/null 2>&1; then
-        echo -e "${YELLOW}Ollama läuft, aber UI-TARS fehlt.${NC}"
-        echo -e "${YELLOW}Modell wird beim ersten Start gepullt (ca. 15 GB)...${NC}"
-    else
-        echo -e "${RED}Ollama nicht erreichbar!${NC}"
-        echo -e "${YELLOW}Starte mit: sudo snap start ollama.ollama${NC}"
-        echo -e "${YELLOW}Dann: ollama pull 0000/ui-tars-1.5-7b${NC}"
-        exit 1
-    fi
-else
-    echo -e "${RED}Ollama nicht installiert!${NC}"
-    echo -e "${YELLOW}Installiere mit: sudo snap install ollama${NC}"
-    exit 1
-fi
 
-# App starten
-echo ""
-echo -e "${GREEN}Starte VLM Agent...${NC}"
-exec "$VENV_DIR/bin/python" main.py "$@"
+# CLI-Modus?
+if [ "$1" = "--cli" ]; then
+    shift
+    echo -e "${GREEN}Starte im CLI-Modus...${NC}"
+    exec "$VENV_DIR/bin/python" main_cli.py "$@"
+else
+    echo -e "${GREEN}Starte GUI...${NC}"
+    exec "$VENV_DIR/bin/python" main.py "$@"
+fi
