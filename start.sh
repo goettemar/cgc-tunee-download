@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# CGC Tunee Download — VLM Agent Launcher
+# CGC Tunee Download — Launcher
 #
 
 set -e
@@ -20,8 +20,8 @@ NC='\033[0m'
 echo -e "${CYAN}"
 echo "╔═══════════════════════════════════════════════════════╗"
 echo "║                                                       ║"
-echo "║   CGC Tunee Download — VLM Agent                      ║"
-echo "║   Model: UI-TARS 1.5 7B via Ollama                   ║"
+echo "║   CGC Tunee Download                                  ║"
+echo "║   Template-Matching + PySide6 GUI                     ║"
 echo "║                                                       ║"
 echo "╚═══════════════════════════════════════════════════════╝"
 echo -e "${NC}"
@@ -36,16 +36,17 @@ fi
 source "$VENV_DIR/bin/activate"
 
 # Abhängigkeiten prüfen/installieren
-if [ ! -f "$VENV_DIR/.vlm_installed" ]; then
+MARKER="$VENV_DIR/.gui_installed"
+if [ ! -f "$MARKER" ] || [ requirements.txt -nt "$MARKER" ]; then
     echo -e "${YELLOW}Installiere Abhängigkeiten...${NC}"
     pip install --upgrade pip -q
     pip install -r requirements.txt -q
-    touch "$VENV_DIR/.vlm_installed"
+    touch "$MARKER"
     echo -e "${GREEN}Installation abgeschlossen.${NC}"
 fi
 
 # Verzeichnisse erstellen
-mkdir -p cookies downloads
+mkdir -p data downloads
 
 # tkinter prüfen (benötigt für PyAutoGUI)
 if ! python3 -c "import tkinter" 2>/dev/null; then
@@ -60,7 +61,7 @@ if ! python3 -c "import tkinter" 2>/dev/null; then
         source "$VENV_DIR/bin/activate"
         pip install --upgrade pip -q
         pip install -r requirements.txt -q
-        touch "$VENV_DIR/.vlm_installed"
+        touch "$MARKER"
     else
         echo -e "${RED}Bitte manuell installieren: sudo apt-get install python3-tk${NC}"
     fi
@@ -77,27 +78,7 @@ if [ "$XDG_SESSION_TYPE" = "wayland" ] && [ -n "$XAUTHORITY" ] && [ -n "$DISPLAY
     fi
 fi
 
-# Ollama-Status prüfen
+# App starten (GUI per default, --cli für CLI-Modus)
 echo ""
-if command -v ollama &>/dev/null; then
-    if ollama list 2>/dev/null | grep -q "ui-tars"; then
-        echo -e "${GREEN}Ollama läuft + UI-TARS Modell verfügbar${NC}"
-    elif curl -sf http://localhost:11434/api/tags >/dev/null 2>&1; then
-        echo -e "${YELLOW}Ollama läuft, aber UI-TARS fehlt.${NC}"
-        echo -e "${YELLOW}Modell wird beim ersten Start gepullt (ca. 15 GB)...${NC}"
-    else
-        echo -e "${RED}Ollama nicht erreichbar!${NC}"
-        echo -e "${YELLOW}Starte mit: sudo snap start ollama.ollama${NC}"
-        echo -e "${YELLOW}Dann: ollama pull 0000/ui-tars-1.5-7b${NC}"
-        exit 1
-    fi
-else
-    echo -e "${RED}Ollama nicht installiert!${NC}"
-    echo -e "${YELLOW}Installiere mit: sudo snap install ollama${NC}"
-    exit 1
-fi
-
-# App starten
-echo ""
-echo -e "${GREEN}Starte VLM Agent...${NC}"
-exec "$VENV_DIR/bin/python" main.py "$@"
+echo -e "${GREEN}Starte CGC Tunee Download...${NC}"
+"$VENV_DIR/bin/python" main.py "$@"
