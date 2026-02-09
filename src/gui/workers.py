@@ -68,6 +68,15 @@ class DownloadWorker(BaseWorker):
         self._events = SignalEvents(self)
 
         try:
+            # Auto-scan: create folders for all songs before downloading
+            self.log.emit("Scanne Songliste von tunee.ai...")
+            songs = get_song_list()
+            self.log.emit(f"{len(songs)} Songs gefunden — erstelle Ordner...")
+            status = prepare_project(songs)
+            complete = sum(1 for s in status if s["complete"])
+            missing = len(status) - complete
+            self.log.emit(f"Projekt: {len(status)} Songs, {complete} fertig, {missing} fehlend")
+
             set_monitor(cfg.monitor_index)
             success = run_task(
                 max_songs=cfg.max_songs,
