@@ -66,8 +66,9 @@ def run_task(task: str | None = None, max_steps: int = 30, dry_run: bool = False
         print(f"  {C_THOUGHT}Thought: {parsed.thought}{C_RESET}")
         print(f"  {C_ACTION}Action:  {parsed.action_type}({parsed.params}){C_RESET}")
 
-        # Append raw response to action history for context
-        action_history.append(response.strip())
+        # Only add well-formed actions to history (skip garbage responses)
+        if parsed.action_type != "unknown":
+            action_history.append(response.strip())
 
         if dry_run:
             print(f"  (dry-run — skipping execution)")

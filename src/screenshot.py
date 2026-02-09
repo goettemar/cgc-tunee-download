@@ -36,15 +36,25 @@ def get_screen_size() -> tuple[int, int]:
         return mon["width"], mon["height"]
 
 
+# Max image dimension sent to VLM — smaller = faster + more consistent.
+# UI-TARS coordinates will be in this resized space.
+MAX_VLM_WIDTH = 1280
+MAX_VLM_HEIGHT = 720
+
+
 def take_screenshot() -> tuple[str, tuple[int, int]]:
-    """Capture the selected monitor and return as base64-encoded PNG.
+    """Capture the selected monitor, resize for VLM, return as base64-encoded PNG.
 
     Returns:
-        (base64_png, (width, height)) — the encoded image and its pixel dimensions.
+        (base64_png, (width, height)) — the encoded image and its pixel dimensions
+        (after resizing).
     """
     with mss.mss() as sct:
         shot = sct.grab(sct.monitors[_monitor_idx])
         img = Image.frombytes("RGB", shot.size, shot.bgra, "raw", "BGRX")
+
+    # Resize to fit VLM input while keeping aspect ratio
+    img.thumbnail((MAX_VLM_WIDTH, MAX_VLM_HEIGHT), Image.LANCZOS)
 
     buf = io.BytesIO()
     img.save(buf, format="PNG")
