@@ -62,6 +62,21 @@ def take_screenshot() -> tuple[str, tuple[int, int]]:
     return base64.b64encode(buf.getvalue()).decode(), img.size
 
 
+def take_screenshot_bgr():
+    """Capture the selected monitor as a BGR numpy array (for OpenCV template matching).
+
+    Returns:
+        numpy.ndarray in BGR format, at native monitor resolution (no resize).
+    """
+    import numpy as np
+
+    with mss.mss() as sct:
+        shot = sct.grab(sct.monitors[_monitor_idx])
+        # mss returns BGRA; convert to BGR for OpenCV
+        img = np.frombuffer(shot.bgra, dtype=np.uint8).reshape(shot.height, shot.width, 4)
+        return img[:, :, :3].copy()  # drop alpha, keep BGR
+
+
 def get_image_size(b64_png: str) -> tuple[int, int]:
     """Get (width, height) of a base64-encoded PNG without fully decoding it."""
     data = base64.b64decode(b64_png)
