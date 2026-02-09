@@ -7,24 +7,11 @@ import urllib.error
 MODEL = "0000/ui-tars-1.5-7b"
 OLLAMA_URL = "http://localhost:11434"
 
+# Native UI-TARS system prompt — do NOT override with custom instructions,
+# the model was trained with this exact prompt.
 SYSTEM_PROMPT = (
-    "You are a GUI automation agent. You see a screenshot of a desktop. "
-    "Based on the user's task, decide the next single action to perform.\n\n"
-    "Respond in EXACTLY this format:\n"
-    "Thought: <your reasoning>\n"
-    "Action: <action>\n\n"
-    "Available actions:\n"
-    "- click(start_box='<|box_start|>(x,y)<|box_end|>')\n"
-    "- left_double(start_box='<|box_start|>(x,y)<|box_end|>')\n"
-    "- right_single(start_box='<|box_start|>(x,y)<|box_end|>')\n"
-    "- type(content='text to type')\n"
-    "- hotkey(key='ctrl+a')\n"
-    "- scroll(start_box='<|box_start|>(x,y)<|box_end|>', direction='down', amount=3)\n"
-    "- drag(start_box='<|box_start|>(x1,y1)<|box_end|>', end_box='<|box_start|>(x2,y2)<|box_end|>')\n"
-    "- wait(time=2)\n"
-    "- finished(content='task completed')\n\n"
-    "Coordinates are normalized to 0-1000 range for both x and y.\n"
-    "Always output exactly ONE action per response."
+    "You are a GUI agent. You are given a task and your action history, "
+    "with screenshots. You need to perform the next action to complete the task."
 )
 
 
@@ -50,27 +37,30 @@ def check_ollama_running() -> bool:
         return False
 
 
-def ask_vlm(screenshot_b64: str, task: str, history: list[dict] | None = None) -> str:
+def ask_vlm(screenshot_b64: str, task: str, action_history: list[str] | None = None) -> str:
     """Send screenshot + task to UI-TARS via Ollama and return the response text.
 
     Args:
         screenshot_b64: Base64-encoded PNG screenshot.
         task: The task description / instruction for the agent.
-        history: Optional list of previous messages for context.
+        action_history: Optional list of previous Thought+Action strings.
 
     Returns:
         Raw text response from the model.
     """
-    messages: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    # Build user content in UI-TARS native format
+    user_content = f"Task: {task}"
+    if action_history:
+        user_content += "\n\nAction History:\n" + "\n".join(action_history)
 
-    if history:
-        messages.extend(history)
-
-    messages.append({
-        "role": "user",
-        "content": task,
-        "images": [screenshot_b64],
-    })
+    messages: list[dict] = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": user_content,
+            "images": [screenshot_b64],
+        },
+    ]
 
     payload = json.dumps({
         "model": MODEL,

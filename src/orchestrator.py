@@ -17,20 +17,14 @@ C_ERR = "\033[0;31m"     # red
 C_RESET = "\033[0m"
 
 TASK_DOWNLOAD_ALL = (
-    "You are on tunee.ai looking at a list of songs. "
-    "Your goal: download every song one by one. "
-    "For each song:\n"
-    "1. Hover over the song row to reveal the action icons.\n"
-    "2. Click the download icon (down-arrow icon) on that row.\n"
-    "3. A download modal appears with buttons: MP3, RAW, VIDEO, LRC.\n"
-    "4. Click 'MP3 Download' and wait 2 seconds.\n"
-    "5. Click 'RAW Download' and wait 2 seconds.\n"
-    "6. Click 'LRC Download' (skip if greyed out) and wait 2 seconds.\n"
-    "7. Close the modal (click X or outside it).\n"
-    "8. Move to the next song and repeat.\n"
-    "9. When all songs are downloaded, call finished().\n\n"
-    "Important: Only perform ONE action per step. "
-    "If a download button starts a file download, just wait for it — don't navigate away."
+    "Go to the music list on tunee.ai. Download every song one by one. "
+    "For each song: hover over the song row to reveal icons, "
+    "click the download icon (down-arrow), "
+    "then in the modal click MP3 Download, wait 2 seconds, "
+    "click RAW Download, wait 2 seconds, "
+    "click LRC Download (skip if greyed out), wait 2 seconds, "
+    "close the modal, and move to the next song. "
+    "When all songs are downloaded, call finished()."
 )
 
 
@@ -48,7 +42,7 @@ def run_task(task: str | None = None, max_steps: int = 30, dry_run: bool = False
     if task is None:
         task = TASK_DOWNLOAD_ALL
 
-    history: list[dict] = []
+    action_history: list[str] = []
 
     print(f"\n{C_STEP}{'=' * 60}")
     print(f"  VLM Agent — max {max_steps} steps")
@@ -57,11 +51,11 @@ def run_task(task: str | None = None, max_steps: int = 30, dry_run: bool = False
     for step in range(1, max_steps + 1):
         print(f"{C_STEP}[Step {step}/{max_steps}]{C_RESET} Taking screenshot...")
 
-        screenshot_b64 = take_screenshot()
+        screenshot_b64, img_size = take_screenshot()
 
-        print(f"  Asking VLM...")
+        print(f"  Asking VLM (image {img_size[0]}x{img_size[1]})...")
         try:
-            response = ask_vlm(screenshot_b64, task, history)
+            response = ask_vlm(screenshot_b64, task, action_history or None)
         except Exception as e:
             print(f"  {C_ERR}VLM error: {e}{C_RESET}")
             time.sleep(2)
@@ -72,8 +66,8 @@ def run_task(task: str | None = None, max_steps: int = 30, dry_run: bool = False
         print(f"  {C_THOUGHT}Thought: {parsed.thought}{C_RESET}")
         print(f"  {C_ACTION}Action:  {parsed.action_type}({parsed.params}){C_RESET}")
 
-        # Append to history for context
-        history.append({"role": "assistant", "content": response})
+        # Append raw response to action history for context
+        action_history.append(response.strip())
 
         if dry_run:
             print(f"  (dry-run — skipping execution)")
@@ -84,10 +78,10 @@ def run_task(task: str | None = None, max_steps: int = 30, dry_run: bool = False
             continue
 
         try:
-            finished = execute(parsed)
+            finished = execute(parsed, img_size)
         except Exception as e:
             print(f"  {C_ERR}Execution error: {e}{C_RESET}")
-            history.append({"role": "user", "content": f"Error executing action: {e}. Try a different approach."})
+            action_history.append(f"Error: {e}")
             time.sleep(2)
             continue
 
@@ -99,8 +93,8 @@ def run_task(task: str | None = None, max_steps: int = 30, dry_run: bool = False
         time.sleep(2)
 
         # Keep history manageable (last 10 exchanges)
-        if len(history) > 20:
-            history = history[-20:]
+        if len(action_history) > 10:
+            action_history = action_history[-10:]
 
     print(f"\n{C_ERR}Max steps ({max_steps}) reached without finishing.{C_RESET}")
     return False

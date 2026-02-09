@@ -13,6 +13,7 @@ import time
 
 from src.vlm import check_ollama_running, check_model_available, MODEL
 from src.orchestrator import run_task, TASK_DOWNLOAD_ALL
+from src.screenshot import set_monitor, list_monitors
 
 CHROME_PROFILE = os.path.join(os.path.dirname(__file__), "cookies", "chrome_profile")
 TUNEE_URL = "https://www.tunee.ai"
@@ -74,7 +75,22 @@ def main():
                         help="Custom task prompt (default: download all songs)")
     parser.add_argument("--url", type=str, default=TUNEE_URL,
                         help=f"Tunee URL to open (default: {TUNEE_URL})")
+    parser.add_argument("--monitor", type=int, default=1,
+                        help="Monitor index to capture (1-based, default: 1 = primary)")
+    parser.add_argument("--list-monitors", action="store_true",
+                        help="List available monitors and exit")
     args = parser.parse_args()
+
+    # List monitors mode
+    if args.list_monitors:
+        monitors = list_monitors()
+        for i, m in enumerate(monitors):
+            label = "all combined" if i == 0 else f"monitor {i}"
+            print(f"  {i}: {label} — {m['width']}x{m['height']} @ ({m['left']}, {m['top']})")
+        return
+
+    # Set monitor before anything else
+    set_monitor(args.monitor)
 
     print()
     print("=" * 50)
@@ -82,6 +98,11 @@ def main():
     print("  Model: UI-TARS 1.5 7B via Ollama")
     print("=" * 50)
     print()
+
+    # Show monitor info
+    monitors = list_monitors()
+    mon = monitors[args.monitor]
+    print(f"[OK]   Monitor {args.monitor}: {mon['width']}x{mon['height']} @ ({mon['left']}, {mon['top']})")
 
     # Preflight
     if not preflight_checks():
