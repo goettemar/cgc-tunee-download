@@ -1,4 +1,10 @@
-"""Template-only orchestrator: downloads all songs via OpenCV template matching."""
+"""Template-only orchestrator: downloads all songs via OpenCV template matching.
+
+New workflow:
+1. Scraper reads song list from tunee.ai page via CDP
+2. Empty folders are pre-created for all songs
+3. Downloader skips songs whose folders already have files
+"""
 
 from __future__ import annotations
 
@@ -35,6 +41,8 @@ MAX_RETRIES = 5
 # File extensions we look for
 SONG_EXTENSIONS = {".mp3", ".wav", ".flac", ".lrc", ".mp4"}
 
+
+# ── Helpers ──────────────────────────────────────────────────────────
 
 def _click_at(x: int, y: int, label: str, events: OrchestratorEvents) -> None:
     """Click at screenshot coordinates (adds monitor offset)."""
@@ -74,24 +82,155 @@ def _sanitize(name: str) -> str:
     return re.sub(r'[<>:"/\\|?*]', '_', name).strip('. ')
 
 
-def _is_duplicate(song_name: str, duration: str) -> bool:
-    """Check if a song with same name + duration already exists in TUNEE_DIR."""
-    if not os.path.isdir(TUNEE_DIR):
+def _duration_display_to_folder(display: str) -> str:
+    """Convert 'MM:SS' → 'MMmSSs'."""
+    parts = display.split(":")
+    if len(parts) == 2:
+        return f"{int(parts[0]):02d}m{int(parts[1]):02d}s"
+    return "00m00s"
+
+
+def _folder_has_files(folder_path: str) -> bool:
+    """Check if a folder contains any song files."""
+    if not os.path.isdir(folder_path):
         return False
-    sanitized = _sanitize(song_name)
-    suffix = f" - {sanitized} - {duration}"
-    for entry in os.listdir(TUNEE_DIR):
-        if entry.endswith(suffix) and os.path.isdir(os.path.join(TUNEE_DIR, entry)):
+    for f in os.listdir(folder_path):
+        if os.path.splitext(f)[1].lower() in SONG_EXTENSIONS:
             return True
     return False
 
 
+# ── Project preparation ──────────────────────────────────────────────
+
+def prepare_project(songs: list[dict]) -> list[dict]:
+    """Create empty folders for all songs from scraper data.
+
+    Args:
+        songs: list of {"name": str, "duration": str} from scraper
+               (duration in "MM:SS" format)
+
+    Returns:
+        list of {"num": int, "name": str, "duration": str,
+                 "folder": str, "complete": bool}
+    """
+    os.makedirs(TUNEE_DIR, exist_ok=True)
+    result = []
+
+    for i, song in enumerate(songs, 1):
+        name = _sanitize(song["name"])
+        dur = _duration_display_to_folder(song["duration"])
+        folder_name = f"{i:02d} - {name} - {dur}"
+        folder_path = os.path.join(TUNEE_DIR, folder_name)
+        os.makedirs(folder_path, exist_ok=True)
+
+        complete = _folder_has_files(folder_path)
+        result.append({
+            "num": i,
+            "name": song["name"],
+            "duration": dur,
+            "folder": folder_name,
+            "complete": complete,
+        })
+
+    return result
+
+
+def get_project_status() -> dict:
+    """Get download status from existing folders.
+
+    Returns {"total": int, "complete": int, "missing": int,
+             "missing_nums": list[int]}
+    """
+    if not os.path.isdir(TUNEE_DIR):
+        return {"total": 0, "complete": 0, "missing": 0, "missing_nums": []}
+
+    folders = sorted(d for d in os.listdir(TUNEE_DIR)
+                     if os.path.isdir(os.path.join(TUNEE_DIR, d)))
+    total = len(folders)
+    complete = 0
+    missing_nums = []
+
+    for folder in folders:
+        path = os.path.join(TUNEE_DIR, folder)
+        if _folder_has_files(path):
+            complete += 1
+        else:
+            # Extract number from folder name
+            match = re.match(r"(\d+)", folder)
+            if match:
+                missing_nums.append(int(match.group(1)))
+
+    return {
+        "total": total,
+        "complete": complete,
+        "missing": total - complete,
+        "missing_nums": missing_nums,
+    }
+
+
+# ── Duplicate check (folder-based) ──────────────────────────────────
+
+def _find_matching_folder(song_name: str, duration: str) -> str | None:
+    """Find the pre-created folder matching this song.
+
+    Tries exact match first (name + duration), then name-only with
+    closest duration (±2 seconds tolerance).
+    """
+    if not os.path.isdir(TUNEE_DIR):
+        return None
+
+    sanitized = _sanitize(song_name)
+    exact_suffix = f" - {sanitized} - {duration}"
+
+    # Exact match
+    for entry in os.listdir(TUNEE_DIR):
+        if entry.endswith(exact_suffix) and os.path.isdir(os.path.join(TUNEE_DIR, entry)):
+            return entry
+
+    # Fuzzy match: same name, duration ±2 seconds
+    name_part = f" - {sanitized} - "
+    dur_match = re.match(r"(\d+)m(\d+)s", duration)
+    if not dur_match:
+        return None
+    target_secs = int(dur_match.group(1)) * 60 + int(dur_match.group(2))
+
+    best = None
+    best_diff = 999
+    for entry in os.listdir(TUNEE_DIR):
+        if name_part not in entry:
+            continue
+        if not os.path.isdir(os.path.join(TUNEE_DIR, entry)):
+            continue
+        # Extract duration from folder name
+        m = re.search(r"(\d+)m(\d+)s$", entry)
+        if not m:
+            continue
+        folder_secs = int(m.group(1)) * 60 + int(m.group(2))
+        diff = abs(folder_secs - target_secs)
+        if diff <= 2 and diff < best_diff:
+            best = entry
+            best_diff = diff
+
+    return best
+
+
+def _is_already_downloaded(song_name: str, duration: str) -> bool:
+    """Check if the matching folder already has files (= already downloaded)."""
+    folder = _find_matching_folder(song_name, duration)
+    if not folder:
+        return False
+    return _folder_has_files(os.path.join(TUNEE_DIR, folder))
+
+
+# ── Move files to folder ────────────────────────────────────────────
+
 def _move_to_subfolder(
     new_files: set[str], song_num: int, events: OrchestratorEvents,
 ) -> tuple[str | None, str, str]:
-    """Move new downloads into a numbered subfolder under tunee/.
+    """Move new downloads into the matching pre-created folder.
 
-    Returns (folder_name | "DUPLICATE" | None, song_name, duration).
+    Falls back to creating a new numbered folder if no match found.
+    Returns (folder_name | None, song_name, duration).
     """
     if not new_files:
         return None, "Unknown", "00m00s"
@@ -112,14 +251,12 @@ def _move_to_subfolder(
     if mp3_path:
         duration = _get_duration(mp3_path)
 
-    # Check for duplicate
-    if _is_duplicate(song_name, duration):
-        events.on_log(f"  {C_WARN}DUPLICATE: {song_name} ({duration}) — deleting{C_RESET}")
-        for f in new_files:
-            os.remove(f)
-        return "DUPLICATE", song_name, duration
+    # Try to find pre-created folder
+    folder_name = _find_matching_folder(song_name, duration)
+    if not folder_name:
+        # Fallback: create new folder
+        folder_name = f"{song_num:02d} - {_sanitize(song_name)} - {duration}"
 
-    folder_name = f"{song_num:02d} - {_sanitize(song_name)} - {duration}"
     folder_path = os.path.join(TUNEE_DIR, folder_name)
     os.makedirs(folder_path, exist_ok=True)
 
@@ -130,6 +267,8 @@ def _move_to_subfolder(
     events.on_log(f"  {C_DONE}Moved {len(new_files)} files → {folder_name}/{C_RESET}")
     return folder_name, song_name, duration
 
+
+# ── Download helpers ─────────────────────────────────────────────────
 
 def _wait_for_video_download(
     before_mp4s: set[str], events: OrchestratorEvents,
@@ -202,15 +341,37 @@ def _click_template(
     return False
 
 
+def _wait_for_new_mp3(files_before: set[str], events: OrchestratorEvents,
+                      timeout: int = 30) -> str | None:
+    """Wait for a new MP3 to appear in ~/Downloads. Returns path or None."""
+    for _ in range(timeout):
+        if events.should_stop():
+            return None
+        time.sleep(1)
+        current = _get_dl_files()
+        new_mp3s = [f for f in (current - files_before) if f.endswith(".mp3")]
+        if new_mp3s:
+            time.sleep(0.5)
+            return new_mp3s[0]
+        if glob.glob(os.path.join(DL_DIR, "*.crdownload")):
+            continue
+    return None
+
+
+# ── Single song download ────────────────────────────────────────────
+
 def _download_song(
     icon_x: int, icon_y: int, song_num: int, events: OrchestratorEvents,
 ) -> tuple[str, str, str]:
     """Download all formats for one song.
 
+    Early duplicate check: downloads MP3 first, checks if the matching
+    folder already has files, and only downloads remaining formats for
+    new songs.
+
     Returns: (result, song_name, duration)
       result: "ok", "duplicate", or "failed"
     """
-    # Snapshot files before download
     files_before = _get_dl_files()
 
     # Step 1: Click the download icon to open modal
@@ -224,19 +385,38 @@ def _download_song(
         return "failed", "Unknown", "00m00s"
     events.on_log(f"  {C_DONE}MP3 ✓{C_RESET}")
 
-    # Step 3: Click RAW Download
+    # Step 3: Wait for MP3 and check if already downloaded
+    mp3_path = _wait_for_new_mp3(files_before, events)
+    if not mp3_path:
+        events.on_log(f"  {C_ERR}MP3 download timeout{C_RESET}")
+        pyautogui.press("escape")
+        return "failed", "Unknown", "00m00s"
+
+    song_name = os.path.splitext(os.path.basename(mp3_path))[0]
+    duration = _get_duration(mp3_path)
+
+    if _is_already_downloaded(song_name, duration):
+        events.on_log(f"  {C_WARN}ALREADY DOWNLOADED: {song_name} ({duration}) — skipping{C_RESET}")
+        os.remove(mp3_path)
+        pyautogui.press("escape")
+        time.sleep(1)
+        return "duplicate", song_name, duration
+
+    events.on_log(f"  New song: {song_name} ({duration}) — downloading remaining formats")
+
+    # Step 4: Click RAW Download
     if not _click_modal_row("modal_raw.png", "RAW Download", events):
         events.on_log(f"  {C_WARN}RAW not found — skipping{C_RESET}")
     else:
         events.on_log(f"  {C_DONE}RAW ✓{C_RESET}")
 
-    # Step 4: Click LRC Download
+    # Step 5: Click LRC Download
     if not _click_modal_row("modal_lrc.png", "LRC Download", events):
         events.on_log(f"  {C_WARN}LRC not found — skipping{C_RESET}")
     else:
         events.on_log(f"  {C_DONE}LRC ✓{C_RESET}")
 
-    # Step 5: Click VIDEO Download (opens Lyric Video modal)
+    # Step 6: Click VIDEO Download (opens Lyric Video modal)
     mp4s_before = set(glob.glob(os.path.join(DL_DIR, "*.mp4")))
 
     if not _click_modal_row("modal_video.png", "VIDEO Download", events):
@@ -245,10 +425,10 @@ def _download_song(
         time.sleep(1)
         _wait_for_downloads_complete(events)
         new_files = _get_dl_files() - files_before
-        result, song_name, duration = _move_to_subfolder(new_files, song_num, events)
-        return ("duplicate" if result == "DUPLICATE" else "ok"), song_name, duration
+        _move_to_subfolder(new_files, song_num, events)
+        return "ok", song_name, duration
 
-    # Step 6: Click Download in Lyric Video modal
+    # Step 7: Click Download in Lyric Video modal
     time.sleep(1)
     if _click_template("lyric_video_download.png", "Video DL Button", events, VIDEO_DL_THRESHOLD):
         events.on_log(f"  {C_DONE}VIDEO DL ✓{C_RESET}")
@@ -263,9 +443,11 @@ def _download_song(
     _wait_for_downloads_complete(events)
 
     new_files = _get_dl_files() - files_before
-    result, song_name, duration = _move_to_subfolder(new_files, song_num, events)
-    return ("duplicate" if result == "DUPLICATE" else "ok"), song_name, duration
+    _move_to_subfolder(new_files, song_num, events)
+    return "ok", song_name, duration
 
+
+# ── Main download loop ───────────────────────────────────────────────
 
 def run_task(
     max_songs: int = 50,
@@ -275,7 +457,8 @@ def run_task(
 ) -> bool:
     """Download all songs by finding download icons top-to-bottom.
 
-    Pure template matching — no VLM needed.
+    Pre-created folders are used for duplicate detection: if a folder
+    already has files, the song is skipped (only MP3 downloaded + checked).
     """
     if events is None:
         events = PrintEvents()
@@ -287,9 +470,13 @@ def run_task(
 
     os.makedirs(TUNEE_DIR, exist_ok=True)
 
+    status = get_project_status()
     events.on_log(f"\n{'=' * 60}")
     events.on_log(f"  Template Downloader — max {max_songs} songs")
     events.on_log(f"  Output: {TUNEE_DIR}")
+    if status["total"] > 0:
+        events.on_log(f"  Projekt: {status['total']} Songs, "
+                      f"{status['complete']} fertig, {status['missing']} fehlend")
     events.on_log(f"{'=' * 60}\n")
     events.on_progress(song_count, max_songs)
 
@@ -345,7 +532,7 @@ def run_task(
                 events.on_song_duplicate(tentative_num, song_name, duration)
             elif result == "ok":
                 song_count += 1
-                events.on_song_complete(song_count, f"{song_count:02d} - {_sanitize(song_name)} - {duration}")
+                events.on_song_complete(song_count, f"{_sanitize(song_name)} - {duration}")
                 events.on_progress(song_count, max_songs)
             else:
                 failures += 1
@@ -377,9 +564,9 @@ def run_task(
             time.sleep(2)
 
     events.on_log(f"\n{'=' * 60}")
-    events.on_log(f"  Done! Downloaded {song_count} unique songs to {TUNEE_DIR}")
+    events.on_log(f"  Done! Downloaded {song_count} new songs to {TUNEE_DIR}")
     if duplicates:
-        events.on_log(f"  ({duplicates} duplicates detected and skipped)")
+        events.on_log(f"  ({duplicates} already downloaded — skipped)")
     if failures:
         events.on_log(f"  ({failures} failures)")
     events.on_log(f"{'=' * 60}")

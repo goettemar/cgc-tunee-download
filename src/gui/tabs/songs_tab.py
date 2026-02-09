@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QBrush, QColor
 from PySide6.QtWidgets import (
-    QGroupBox,
     QHBoxLayout,
     QHeaderView,
     QLabel,
@@ -18,10 +17,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..state import get_state
 from ..styles import COLORS
 
 TUNEE_DIR = Path.home() / "Downloads" / "tunee"
+
+# Song file extensions
+_SONG_EXTS = {".mp3", ".wav", ".flac", ".lrc", ".mp4"}
 
 
 class SongsTab(QWidget):
@@ -69,7 +70,7 @@ class SongsTab(QWidget):
         self._table.setRowCount(0)
 
         if not TUNEE_DIR.exists():
-            self._count_label.setText("0 Songs heruntergeladen")
+            self._count_label.setText("0 Songs")
             return
 
         folders = sorted(
@@ -77,8 +78,24 @@ class SongsTab(QWidget):
             key=lambda d: d.name,
         )
 
-        self._count_label.setText(f"{len(folders)} Songs heruntergeladen")
+        # Count complete vs missing
+        complete = 0
+        missing = 0
+        for folder in folders:
+            has_files = any(f.suffix.lower() in _SONG_EXTS for f in folder.iterdir() if f.is_file())
+            if has_files:
+                complete += 1
+            else:
+                missing += 1
+
+        if missing > 0:
+            self._count_label.setText(
+                f"{complete} heruntergeladen, {missing} fehlend ({len(folders)} gesamt)")
+        else:
+            self._count_label.setText(f"{complete} Songs heruntergeladen")
+
         self._table.setRowCount(len(folders))
+        missing_brush = QBrush(QColor(COLORS["error"]))
 
         for row, folder in enumerate(folders):
             name = folder.name
@@ -98,15 +115,25 @@ class SongsTab(QWidget):
                     pass
 
             # Count files and total size
-            files = list(folder.iterdir())
-            file_count = len([f for f in files if f.is_file()])
-            total_mb = sum(f.stat().st_size for f in files if f.is_file()) / (1024 * 1024)
+            files = [f for f in folder.iterdir() if f.is_file()]
+            song_files = [f for f in files if f.suffix.lower() in _SONG_EXTS]
+            file_count = len(song_files)
+            total_mb = sum(f.stat().st_size for f in files) / (1024 * 1024)
 
-            self._table.setItem(row, 0, self._centered_item(num))
-            self._table.setItem(row, 1, QTableWidgetItem(song_name))
-            self._table.setItem(row, 2, self._centered_item(display_dur))
-            self._table.setItem(row, 3, self._centered_item(str(file_count)))
-            self._table.setItem(row, 4, self._centered_item(f"{total_mb:.0f}"))
+            is_missing = file_count == 0
+
+            items = [
+                self._centered_item(num),
+                QTableWidgetItem("  " + song_name if is_missing else song_name),
+                self._centered_item(display_dur),
+                self._centered_item("fehlend" if is_missing else str(file_count)),
+                self._centered_item("—" if is_missing else f"{total_mb:.0f}"),
+            ]
+
+            for col, item in enumerate(items):
+                if is_missing:
+                    item.setForeground(missing_brush)
+                self._table.setItem(row, col, item)
 
     @staticmethod
     def _centered_item(text: str) -> QTableWidgetItem:

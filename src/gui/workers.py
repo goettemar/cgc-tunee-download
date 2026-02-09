@@ -7,7 +7,8 @@ import traceback
 from PySide6.QtCore import QThread, Signal
 
 from ..events import SignalEvents
-from ..orchestrator import run_task
+from ..orchestrator import run_task, prepare_project
+from ..scraper import get_song_list
 from ..screenshot import set_monitor
 from .state import get_state
 
@@ -18,6 +19,31 @@ class BaseWorker(QThread):
     log = Signal(str)
     error = Signal(str)
     finished_work = Signal(bool, str)  # success, message
+
+
+class ScanWorker(BaseWorker):
+    """Scan tunee.ai page via CDP and prepare project folders."""
+
+    scan_complete = Signal(list)  # list of song status dicts
+
+    def run(self) -> None:
+        try:
+            self.log.emit("Scanne Songliste von tunee.ai...")
+            songs = get_song_list()
+            self.log.emit(f"{len(songs)} Songs auf der Seite gefunden")
+
+            self.log.emit("Erstelle Ordner...")
+            status = prepare_project(songs)
+
+            complete = sum(1 for s in status if s["complete"])
+            missing = len(status) - complete
+            self.log.emit(f"Projekt: {len(status)} Songs, {complete} fertig, {missing} fehlend")
+
+            self.scan_complete.emit(status)
+            self.finished_work.emit(True, f"{len(status)} Songs, {missing} fehlend")
+        except Exception as exc:
+            self.error.emit(f"Scan fehlgeschlagen: {exc}")
+            self.finished_work.emit(False, str(exc))
 
 
 class DownloadWorker(BaseWorker):

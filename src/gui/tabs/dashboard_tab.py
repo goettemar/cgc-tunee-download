@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
 
 from ..state import get_state
 from ..styles import COLORS, LOG_PANEL_STYLE
-from ..workers import DownloadWorker
+from ..workers import DownloadWorker, ScanWorker
 
 TEMPLATES_DIR = Path(__file__).parent.parent.parent.parent / "old_code" / "templates"
 REQUIRED_TEMPLATES = [
@@ -38,6 +38,7 @@ class DashboardTab(QWidget):
         super().__init__(parent)
         self._worker: DownloadWorker | None = None
         self._chrome_proc: subprocess.Popen | None = None
+        self._scan_worker: ScanWorker | None = None
         self._songs_tab = None  # set by MainWindow after construction
         self._build_ui()
         self._run_preflight()
@@ -77,6 +78,11 @@ class DashboardTab(QWidget):
         self._chrome_btn.setProperty("class", "secondary")
         self._chrome_btn.clicked.connect(self._launch_chrome)
         btn_row.addWidget(self._chrome_btn)
+
+        self._scan_btn = QPushButton("Projekt scannen")
+        self._scan_btn.setProperty("class", "secondary")
+        self._scan_btn.clicked.connect(self._scan_project)
+        btn_row.addWidget(self._scan_btn)
 
         self._refresh_btn = QPushButton("Checks aktualisieren")
         self._refresh_btn.setProperty("class", "secondary")
@@ -203,6 +209,8 @@ class DashboardTab(QWidget):
             "--no-default-browser-check",
             "--disable-popup-blocking",
             "--window-size=1920,1080",
+            "--remote-debugging-port=9222",
+            "--remote-allow-origins=*",
             cfg.tunee_url,
         ]
         self._chrome_proc = subprocess.Popen(
@@ -211,6 +219,28 @@ class DashboardTab(QWidget):
         self._append_log("[INFO] Chrome gestartet")
         # Refresh preflight after 3s
         QTimer.singleShot(3000, self._run_preflight)
+
+    # ── Project Scan ─────────────────────────────────────────────
+
+    def _scan_project(self) -> None:
+        self._scan_btn.setEnabled(False)
+        self._scan_worker = ScanWorker(self)
+        self._scan_worker.log.connect(self._append_log)
+        self._scan_worker.error.connect(lambda e: self._append_log(f"[ERROR] {e}"))
+        self._scan_worker.scan_complete.connect(self._on_scan_complete)
+        self._scan_worker.finished_work.connect(self._on_scan_finished)
+        self._scan_worker.start()
+
+    def _on_scan_complete(self, status: list) -> None:
+        complete = sum(1 for s in status if s["complete"])
+        missing = len(status) - complete
+        self._append_log(f"[INFO] Projekt bereit: {len(status)} Songs, "
+                         f"{complete} fertig, {missing} fehlend")
+        if self._songs_tab:
+            self._songs_tab.refresh()
+
+    def _on_scan_finished(self, success: bool, msg: str) -> None:
+        self._scan_btn.setEnabled(True)
 
     # ── Download Worker ──────────────────────────────────────────
 
