@@ -110,8 +110,16 @@ def _wait_for_new_pdf(
     return None
 
 
+def _safe_mouse_position() -> None:
+    """Move mouse to screen center to avoid PyAutoGUI fail-safe."""
+    off_x, off_y = get_monitor_offset()
+    sw, sh = get_screen_size()
+    pyautogui.moveTo(sw // 2 + off_x, sh // 2 + off_y, _pause=False)
+
+
 def _close_modals() -> None:
     """Press Escape three times to reliably close cert modal + player."""
+    _safe_mouse_position()
     for _ in range(3):
         pyautogui.press("escape")
         time.sleep(0.5)
@@ -342,8 +350,15 @@ def run_cert_task(
                     events.on_song_start(current_folder_num, ix, iy)
                     events.on_log(f"  Zertifikat fuer #{current_folder_num}: {folder_name}")
 
-                    success = _download_certificate(ix, iy, current_folder_num,
-                                                    folder_path, events)
+                    try:
+                        success = _download_certificate(ix, iy, current_folder_num,
+                                                        folder_path, events)
+                    except pyautogui.FailSafeException:
+                        events.on_log(f"  {C_WARN}Fail-safe ausgeloest — ueberspringe{C_RESET}")
+                        _safe_mouse_position()
+                        time.sleep(1)
+                        success = False
+
                     if success:
                         completed += 1
                         events.on_song_complete(current_folder_num, folder_name)
