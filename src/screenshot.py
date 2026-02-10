@@ -1,10 +1,11 @@
-"""Screenshot helper — Wayland-compatible with mss fallback."""
+"""Screenshot helper — Wayland-compatible with XDG Portal, gnome-screenshot fallback, and mss for X11."""
 
 import base64
 import io
 import os
 import subprocess
 import tempfile
+from pathlib import Path
 
 from PIL import Image
 
@@ -13,6 +14,10 @@ _monitor_idx: int = 1
 
 # Detect Wayland session
 _is_wayland: bool = os.environ.get("XDG_SESSION_TYPE") == "wayland"
+
+# Persistent portal helper process
+_helper_proc: subprocess.Popen | None = None
+_HELPER_SCRIPT = str(Path(__file__).parent / "_portal_helper.py")
 
 
 def set_monitor(idx: int) -> None:
@@ -24,7 +29,6 @@ def set_monitor(idx: int) -> None:
 def list_monitors() -> list[dict]:
     """Return all monitors as dicts with left/top/width/height."""
     if _is_wayland:
-        # Under Wayland we only reliably know the primary monitor via xrandr
         w, h = get_screen_size()
         return [{"left": 0, "top": 0, "width": w, "height": h},
                 {"left": 0, "top": 0, "width": w, "height": h}]
@@ -59,7 +63,6 @@ def _get_screen_size_wayland() -> tuple[int, int]:
         out = subprocess.check_output(["xrandr", "--current"], text=True, timeout=5)
         for line in out.splitlines():
             if " connected" in line and "+" in line:
-                # e.g. "Virtual-1 connected primary 1920x1080+0+0 ..."
                 for part in line.split():
                     if "x" in part and "+" in part:
                         res = part.split("+")[0]
@@ -70,22 +73,71 @@ def _get_screen_size_wayland() -> tuple[int, int]:
     return 1920, 1080
 
 
-def _capture_wayland() -> Image.Image:
-    """Capture the screen under Wayland using gnome-screenshot or grim."""
+# ── Wayland capture backends ──────────────────────────────────────────
+
+def _get_helper() -> subprocess.Popen | None:
+    """Get or start the persistent portal helper process."""
+    global _helper_proc
+    if _helper_proc is not None and _helper_proc.poll() is None:
+        return _helper_proc
+
+    try:
+        _helper_proc = subprocess.Popen(
+            ["/usr/bin/python3", _HELPER_SCRIPT],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        # Wait for READY signal
+        ready = _helper_proc.stdout.readline().strip()
+        if ready == "READY":
+            return _helper_proc
+        _helper_proc.kill()
+        _helper_proc = None
+    except Exception:
+        _helper_proc = None
+
+    return None
+
+
+def _capture_portal() -> Image.Image | None:
+    """Capture via XDG Desktop Portal using persistent helper process (~1s)."""
+    helper = _get_helper()
+    if helper is None:
+        return None
+
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+        tmp_path = tmp.name
+
+    try:
+        helper.stdin.write(tmp_path + "\n")
+        helper.stdin.flush()
+        response = helper.stdout.readline().strip()
+        if response == "OK" and os.path.exists(tmp_path) and os.path.getsize(tmp_path) > 0:
+            return Image.open(tmp_path).convert("RGB")
+    except (BrokenPipeError, OSError):
+        # Helper died, reset for next call
+        global _helper_proc
+        _helper_proc = None
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+    return None
+
+
+def _capture_gnome_screenshot() -> Image.Image:
+    """Capture via gnome-screenshot CLI (~2.4s, fallback)."""
     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
         tmp_path = tmp.name
     try:
-        # Try gnome-screenshot first (most reliable on GNOME/Zorin)
-        r = subprocess.run(
+        subprocess.run(
             ["gnome-screenshot", "-f", tmp_path],
             capture_output=True, timeout=10,
         )
-        if r.returncode != 0:
-            # Fallback to grim (wlroots-based compositors)
-            subprocess.run(
-                ["grim", tmp_path],
-                capture_output=True, timeout=10, check=True,
-            )
         return Image.open(tmp_path).convert("RGB")
     finally:
         try:
@@ -94,9 +146,17 @@ def _capture_wayland() -> Image.Image:
             pass
 
 
+def _capture_wayland() -> Image.Image:
+    """Capture the screen under Wayland. Tries fast portal first, then gnome-screenshot."""
+    img = _capture_portal()
+    if img is not None:
+        return img
+    return _capture_gnome_screenshot()
+
+
+# ── Public API ────────────────────────────────────────────────────────
+
 # Max image dimension sent to VLM.
-# UI-TARS coordinates will be in this resized space.
-# Higher res = better for small UI elements, but slower inference.
 MAX_VLM_WIDTH = 1920
 MAX_VLM_HEIGHT = 1080
 
@@ -116,7 +176,6 @@ def take_screenshot() -> tuple[str, tuple[int, int]]:
             shot = sct.grab(sct.monitors[_monitor_idx])
             img = Image.frombytes("RGB", shot.size, shot.bgra, "raw", "BGRX")
 
-    # Resize to fit VLM input while keeping aspect ratio
     img.thumbnail((MAX_VLM_WIDTH, MAX_VLM_HEIGHT), Image.LANCZOS)
 
     buf = io.BytesIO()
@@ -140,7 +199,6 @@ def take_screenshot_bgr():
     import mss
     with mss.mss() as sct:
         shot = sct.grab(sct.monitors[_monitor_idx])
-        # mss returns BGRA; convert to BGR for OpenCV
         img = np.frombuffer(shot.bgra, dtype=np.uint8).reshape(shot.height, shot.width, 4)
         return img[:, :, :3].copy()  # drop alpha, keep BGR
 
