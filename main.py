@@ -34,6 +34,36 @@ def launch_chrome(url: str) -> subprocess.Popen:
     return subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
+def run_cert_cli(args) -> int:
+    """CLI mode for certificate downloads."""
+    from src.cert_orchestrator import run_cert_task
+    from src.screenshot import set_monitor, list_monitors
+
+    set_monitor(args.monitor)
+
+    print()
+    print("=" * 50)
+    print("  CGC Tunee Download — Certificate Downloader")
+    print("=" * 50)
+    print()
+
+    monitors = list_monitors()
+    mon = monitors[args.monitor]
+    print(f"[OK]   Monitor {args.monitor}: {mon['width']}x{mon['height']} "
+          f"@ ({mon['left']}, {mon['top']})")
+    print()
+
+    try:
+        input("[WAIT] Press Enter when tunee.ai is open with the song list visible... ")
+    except KeyboardInterrupt:
+        print("\n[ABORT] Cancelled by user.")
+        return 0
+
+    print()
+    success = run_cert_task(max_songs=args.songs, max_scrolls=args.scrolls)
+    return 0 if success else 1
+
+
 def run_cli(args) -> int:
     """Original CLI mode."""
     from src.orchestrator import run_task
@@ -105,10 +135,14 @@ def main():
                       help="Run in command-line mode")
 
     # CLI-only arguments
+    parser.add_argument("--cert", action="store_true",
+                        help="[CLI] Download certificates instead of songs")
     parser.add_argument("--no-chrome", action="store_true",
                         help="[CLI] Don't launch Chrome (assume it's already open)")
     parser.add_argument("--songs", type=int, default=50,
                         help="[CLI] Max songs to download (default: 50)")
+    parser.add_argument("--scrolls", type=int, default=15,
+                        help="[CLI] Max scroll rounds (default: 15)")
     parser.add_argument("--url", type=str, default=TUNEE_URL,
                         help=f"[CLI] Tunee URL to open (default: {TUNEE_URL})")
     parser.add_argument("--monitor", type=int, default=3,
@@ -117,7 +151,9 @@ def main():
                         help="[CLI] List available monitors and exit")
     args = parser.parse_args()
 
-    if args.cli:
+    if args.cli and args.cert:
+        sys.exit(run_cert_cli(args))
+    elif args.cli:
         sys.exit(run_cli(args))
     else:
         from src.gui.app import run_gui

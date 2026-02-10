@@ -21,12 +21,17 @@ from PySide6.QtWidgets import (
 
 from ..state import get_state
 from ..styles import COLORS, LOG_PANEL_STYLE
-from ..workers import DownloadWorker, ScanWorker
+from ..workers import CertWorker, DownloadWorker, ScanWorker
 
 TEMPLATES_DIR = Path(__file__).parent.parent.parent.parent / "old_code" / "templates"
 REQUIRED_TEMPLATES = [
     "download_button.png", "modal_mp3.png", "modal_raw.png",
     "modal_video.png", "modal_lrc.png", "lyric_video_download.png",
+]
+
+CERT_TEMPLATES = [
+    "play_button.png", "three_dots.png",
+    "cert_menu_item.png", "cert_download.png",
 ]
 
 # Strip ANSI escape sequences for GUI log
@@ -37,6 +42,7 @@ class DashboardTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._worker: DownloadWorker | None = None
+        self._cert_worker: CertWorker | None = None
         self._chrome_proc: subprocess.Popen | None = None
         self._scan_worker: ScanWorker | None = None
         self._songs_tab = None  # set by MainWindow after construction
@@ -83,6 +89,11 @@ class DashboardTab(QWidget):
         self._scan_btn.setProperty("class", "secondary")
         self._scan_btn.clicked.connect(self._scan_project)
         btn_row.addWidget(self._scan_btn)
+
+        self._cert_btn = QPushButton("Zertifikate laden")
+        self._cert_btn.setProperty("class", "secondary")
+        self._cert_btn.clicked.connect(self._start_cert_download)
+        btn_row.addWidget(self._cert_btn)
 
         self._refresh_btn = QPushButton("Checks aktualisieren")
         self._refresh_btn.setProperty("class", "secondary")
@@ -260,6 +271,7 @@ class DashboardTab(QWidget):
         self._worker.start()
 
         self._start_btn.setEnabled(False)
+        self._cert_btn.setEnabled(False)
         self._stop_btn.setEnabled(True)
         self._current_label.setText("Download läuft...")
         self._current_label.setStyleSheet(f"color: {COLORS['info']}; font-size: 12px;")
@@ -267,8 +279,51 @@ class DashboardTab(QWidget):
     def _stop_download(self) -> None:
         if self._worker:
             self._worker.request_stop()
-            self._stop_btn.setEnabled(False)
-            self._current_label.setText("Wird gestoppt...")
+        if self._cert_worker:
+            self._cert_worker.request_stop()
+        self._stop_btn.setEnabled(False)
+        self._current_label.setText("Wird gestoppt...")
+
+    # ── Certificate Worker ────────────────────────────────────────
+
+    def _start_cert_download(self) -> None:
+        if self._cert_worker and self._cert_worker.isRunning():
+            return
+        if self._worker and self._worker.isRunning():
+            return
+
+        # Preflight: check cert templates exist
+        missing = [t for t in CERT_TEMPLATES if not (TEMPLATES_DIR / t).exists()]
+        if missing:
+            self._append_log(f"[FEHLER] Cert-Templates fehlen: {', '.join(missing)}")
+            self._append_log("  Erstelle mit: python create_cert_templates.py")
+            return
+
+        state = get_state()
+        state.downloaded = 0
+        state.duplicates = 0
+        state.failures = 0
+        state.running = True
+
+        self._update_stats()
+        self._log.clear()
+
+        self._cert_worker = CertWorker()
+        self._cert_worker.log.connect(self._append_log)
+        self._cert_worker.progress.connect(self._on_progress)
+        self._cert_worker.song_started.connect(self._on_song_started)
+        self._cert_worker.song_completed.connect(self._on_song_completed)
+        self._cert_worker.song_failed.connect(self._on_song_failed)
+        self._cert_worker.icons_found.connect(self._on_icons_found)
+        self._cert_worker.error.connect(self._on_error)
+        self._cert_worker.finished_work.connect(self._on_finished)
+        self._cert_worker.start()
+
+        self._start_btn.setEnabled(False)
+        self._cert_btn.setEnabled(False)
+        self._stop_btn.setEnabled(True)
+        self._current_label.setText("Zertifikate werden geladen...")
+        self._current_label.setStyleSheet(f"color: {COLORS['info']}; font-size: 12px;")
 
     # ── Signal Handlers ──────────────────────────────────────────
 
@@ -320,6 +375,7 @@ class DashboardTab(QWidget):
         state = get_state()
         state.running = False
         self._start_btn.setEnabled(True)
+        self._cert_btn.setEnabled(True)
         self._stop_btn.setEnabled(False)
 
         if success:

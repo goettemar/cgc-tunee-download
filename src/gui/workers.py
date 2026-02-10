@@ -8,6 +8,7 @@ from PySide6.QtCore import QThread, Signal
 
 from ..events import SignalEvents
 from ..orchestrator import run_task, prepare_project
+from ..cert_orchestrator import run_cert_task
 from ..scraper import get_song_list
 from ..screenshot import set_monitor
 from .state import get_state
@@ -89,6 +90,48 @@ class DownloadWorker(BaseWorker):
                 self.finished_work.emit(True, "Download abgeschlossen")
             else:
                 self.finished_work.emit(False, "Keine Songs gefunden")
+        except Exception as exc:
+            self.error.emit(f"Fehler: {exc}")
+            self.log.emit(traceback.format_exc())
+            self.finished_work.emit(False, str(exc))
+        finally:
+            self._events = None
+
+
+class CertWorker(BaseWorker):
+    song_started = Signal(int, int, int)   # num, x, y
+    song_completed = Signal(int, str)      # num, folder_name
+    song_duplicate = Signal(int, str, str) # num, name, duration (unused but needed for SignalEvents)
+    song_failed = Signal(int)              # num
+    icons_found = Signal(int, int)         # count, scroll_round
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._events: SignalEvents | None = None
+
+    def request_stop(self) -> None:
+        if self._events:
+            self._events.request_stop()
+
+    def run(self) -> None:
+        state = get_state()
+        cfg = state.config
+
+        self._events = SignalEvents(self)
+
+        try:
+            set_monitor(cfg.monitor_index)
+            success = run_cert_task(
+                max_songs=cfg.max_songs,
+                max_scrolls=cfg.max_scrolls,
+                events=self._events,
+            )
+            if self._events.should_stop():
+                self.finished_work.emit(False, "Vom Benutzer gestoppt")
+            elif success:
+                self.finished_work.emit(True, "Zertifikate heruntergeladen")
+            else:
+                self.finished_work.emit(False, "Keine Zertifikate gefunden")
         except Exception as exc:
             self.error.emit(f"Fehler: {exc}")
             self.log.emit(traceback.format_exc())
