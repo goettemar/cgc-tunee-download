@@ -111,11 +111,10 @@ def _wait_for_new_pdf(
 
 
 def _close_modals() -> None:
-    """Press Escape twice to close certificate modal and player."""
-    pyautogui.press("escape")
-    time.sleep(0.5)
-    pyautogui.press("escape")
-    time.sleep(0.5)
+    """Press Escape three times to reliably close cert modal + player."""
+    for _ in range(3):
+        pyautogui.press("escape")
+        time.sleep(0.5)
 
 
 def _download_certificate(
@@ -156,7 +155,7 @@ def _download_certificate(
         events.on_log(f"  {C_ERR}Play button not found{C_RESET}")
         return False
 
-    time.sleep(1.5)
+    time.sleep(3.0)  # player needs time to fully load the new song
 
     # Step 3: Find and click three-dots menu
     for attempt in range(MAX_RETRIES):
@@ -219,11 +218,25 @@ def _download_certificate(
     # Step 7: Close modals
     _close_modals()
 
-    # Step 8: Move PDF to song folder
+    # Step 8: Validate PDF name against expected song
     pdf_name = os.path.basename(pdf_path)
+    folder_name = os.path.basename(folder_path)
+    # Extract song name from folder: "NN - SongName - DDmSSs"
+    folder_match = re.match(r"\d+\s*-\s*(.+?)\s*-\s*\d{2}m\d{2}s$", folder_name)
+    if folder_match:
+        expected_song = folder_match.group(1).strip()
+        if expected_song.lower() not in pdf_name.lower():
+            events.on_log(f"  {C_WARN}PDF-Name passt nicht! Erwartet '{expected_song}', "
+                          f"bekommen '{pdf_name}' — ueberspringe{C_RESET}")
+            # Don't move wrong cert — delete it
+            os.remove(pdf_path)
+            _close_modals()
+            return False
+
+    # Step 9: Move PDF to song folder
     dst = os.path.join(folder_path, pdf_name)
     shutil.move(pdf_path, dst)
-    events.on_log(f"  {C_DONE}Certificate: {pdf_name} -> {os.path.basename(folder_path)}/{C_RESET}")
+    events.on_log(f"  {C_DONE}Certificate: {pdf_name} -> {folder_name}/{C_RESET}")
 
     return True
 
@@ -297,12 +310,14 @@ def run_cert_task(
         icons.sort(key=lambda m: m[1])
         events.on_icons_found(len(icons), scroll_round)
 
-        # Filter icons based on scroll round
+        # Filter icons based on scroll round.
+        # After scroll, the first row is often partially hidden behind the
+        # sticky header — play button overlay won't appear.  Skip it.
         if scroll_round == 0:
             min_y = 0
         else:
             _, sh = get_screen_size()
-            min_y = int(sh * 0.15)
+            min_y = int(sh * 0.38)
 
         eligible = [(ix, iy, c) for ix, iy, c in icons if iy > min_y]
 
