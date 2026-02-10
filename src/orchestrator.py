@@ -416,7 +416,7 @@ def _download_song(
     else:
         events.on_log(f"  {C_DONE}LRC ✓{C_RESET}")
 
-    # Step 6: Click VIDEO Download (opens Lyric Video modal)
+    # Step 6: Click VIDEO Download (both modals close automatically)
     mp4s_before = set(glob.glob(os.path.join(DL_DIR, "*.mp4")))
 
     if not _click_modal_row("modal_video.png", "VIDEO Download", events):
@@ -428,15 +428,13 @@ def _download_song(
         _move_to_subfolder(new_files, song_num, events)
         return "ok", song_name, duration
 
-    # Step 7: Click Download in Lyric Video modal
+    # Step 7: Click Download in Lyric Video modal (closes both modals automatically)
     time.sleep(1)
     if _click_template("lyric_video_download.png", "Video DL Button", events, VIDEO_DL_THRESHOLD):
         events.on_log(f"  {C_DONE}VIDEO DL ✓{C_RESET}")
         _wait_for_video_download(mp4s_before, events)
     else:
-        events.on_log(f"  {C_WARN}Video DL button not found — pressing Escape{C_RESET}")
-        pyautogui.press("escape")
-        time.sleep(1)
+        events.on_log(f"  {C_WARN}Video DL button not found{C_RESET}")
         pyautogui.press("escape")
         time.sleep(1)
 
@@ -492,7 +490,10 @@ def run_task(
                                    threshold=DL_ICON_THRESHOLD)
 
         if not icons:
-            events.on_log("No download icons found on screen")
+            events.on_log(f"{C_ERR}No download icons found on screen (round {scroll_round}){C_RESET}")
+            events.on_log(f"  Saving debug screenshot to /tmp/cgc_debug_no_icons.png")
+            import cv2 as _cv2
+            _cv2.imwrite("/tmp/cgc_debug_no_icons.png", screenshot)
             break
 
         icons.sort(key=lambda m: m[1])
@@ -501,7 +502,12 @@ def run_task(
         if scroll_round == 0:
             min_y = 0
         else:
-            min_y = last_bottom_y - 15
+            # After scroll, only skip icons in the very top (likely still
+            # visible from the previous round).  Use 15% of screen height
+            # as cutoff — anything below is treated as new content.
+            # Duplicate detection via folder check handles any re-encounters.
+            _, sh = get_screen_size()
+            min_y = int(sh * 0.15)
 
         eligible = [(ix, iy, c) for ix, iy, c in icons if iy > min_y]
         if not eligible:

@@ -58,8 +58,7 @@ abs_y = round(screen_height * y / 1000)
 3. Modal hat 4 Buttons: MP3 Download, RAW Download, VIDEO, LRC Download
 4. Reihenfolge: **MP3 → RAW → LRC → VIDEO** (VIDEO zuletzt!)
 5. LRC: Falls ausgegraut → Song ist Instrumental, überspringen
-6. VIDEO: Öffnet zweites Modal mit Download-Button → Klick startet Download
-   → Schließt BEIDE Modals automatisch → Nächster Song
+6. VIDEO: Klick startet Download → Schließt BEIDE Modals automatisch → Nächster Song
 
 ## Systemvoraussetzungen
 
