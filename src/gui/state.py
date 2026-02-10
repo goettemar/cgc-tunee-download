@@ -15,7 +15,7 @@ CONFIG_FILE = DATA_DIR / "config.json"
 class AppConfig:
     tunee_url: str = "https://www.tunee.ai"
     output_dir: str = "~/Downloads/tunee"
-    monitor_index: int = 3
+    monitor_index: int = 1
     max_songs: int = 50
     max_scrolls: int = 15
     click_delay: float = 1.5

@@ -157,17 +157,9 @@ class DashboardTab(QWidget):
 
         # Monitor
         try:
-            from ...screenshot import list_monitors
-            monitors = list_monitors()
-            idx = cfg.monitor_index
-            if idx < len(monitors):
-                m = monitors[idx]
-                self._set_check("monitor", True,
-                                f"Monitor {idx}: {m['width']}x{m['height']} "
-                                f"@ ({m['left']},{m['top']})")
-            else:
-                self._set_check("monitor", False,
-                                f"Monitor {idx} nicht verfügbar ({len(monitors) - 1} vorhanden)")
+            from ...screenshot import get_screen_size
+            w, h = get_screen_size()
+            self._set_check("monitor", True, f"Monitor: {w}x{h}")
         except Exception as e:
             self._set_check("monitor", False, f"Monitor-Erkennung fehlgeschlagen: {e}")
 
@@ -177,18 +169,16 @@ class DashboardTab(QWidget):
         self._set_check("templates", found == total,
                         f"Templates: {found}/{total}")
 
-        # Chrome
+        # Chrome (check CDP port)
         try:
-            result = subprocess.run(
-                ["pgrep", "-f", "google-chrome.*cgc_tunee_download"],
-                capture_output=True, timeout=5,
-            )
-            if result.returncode == 0:
-                self._set_check("chrome", True, "Chrome: läuft")
+            import requests
+            r = requests.get("http://127.0.0.1:9222/json/version", timeout=2)
+            if r.status_code == 200:
+                self._set_check("chrome", True, "Chrome: läuft (CDP aktiv)")
             else:
                 self._set_check("chrome", False, "Chrome: nicht gestartet")
         except Exception:
-            self._set_check("chrome", False, "Chrome: Status unbekannt")
+            self._set_check("chrome", False, "Chrome: nicht gestartet")
 
     def _set_check(self, key: str, ok: bool, text: str) -> None:
         icon = "✓" if ok else "✗"
