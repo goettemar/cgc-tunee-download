@@ -49,8 +49,8 @@ class SongsTab(QWidget):
 
         # Table
         self._table = QTableWidget()
-        self._table.setColumnCount(5)
-        self._table.setHorizontalHeaderLabels(["#", "Song Name", "Dauer", "Dateien", "MB"])
+        self._table.setColumnCount(6)
+        self._table.setHorizontalHeaderLabels(["#", "Song Name", "Dauer", "Dateien", "MB", "Cert"])
         self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self._table.setAlternatingRowColors(True)
@@ -62,6 +62,7 @@ class SongsTab(QWidget):
         hdr.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
         hdr.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
         hdr.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)
+        hdr.setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)
 
         layout.addWidget(self._table)
 
@@ -81,18 +82,23 @@ class SongsTab(QWidget):
         # Count complete vs missing
         complete = 0
         missing = 0
+        certs = 0
         for folder in folders:
-            has_files = any(f.suffix.lower() in _SONG_EXTS for f in folder.iterdir() if f.is_file())
+            all_files = list(folder.iterdir())
+            has_files = any(f.suffix.lower() in _SONG_EXTS for f in all_files if f.is_file())
+            has_cert = any(f.suffix.lower() == ".pdf" for f in all_files if f.is_file())
             if has_files:
                 complete += 1
             else:
                 missing += 1
+            if has_cert:
+                certs += 1
 
+        parts = [f"{complete} Songs"]
         if missing > 0:
-            self._count_label.setText(
-                f"{complete} heruntergeladen, {missing} fehlend ({len(folders)} gesamt)")
-        else:
-            self._count_label.setText(f"{complete} Songs heruntergeladen")
+            parts.append(f"{missing} fehlend")
+        parts.append(f"{certs}/{len(folders)} Certs")
+        self._count_label.setText(", ".join(parts))
 
         self._table.setRowCount(len(folders))
         missing_brush = QBrush(QColor(COLORS["error"]))
@@ -117,10 +123,17 @@ class SongsTab(QWidget):
             # Count files and total size
             files = [f for f in folder.iterdir() if f.is_file()]
             song_files = [f for f in files if f.suffix.lower() in _SONG_EXTS]
+            has_cert = any(f.suffix.lower() == ".pdf" for f in files)
             file_count = len(song_files)
             total_mb = sum(f.stat().st_size for f in files) / (1024 * 1024)
 
             is_missing = file_count == 0
+
+            cert_item = self._centered_item("✓" if has_cert else "✗")
+            if has_cert:
+                cert_item.setForeground(QBrush(QColor(COLORS["success"])))
+            else:
+                cert_item.setForeground(QBrush(QColor(COLORS["error"])))
 
             items = [
                 self._centered_item(num),
@@ -128,6 +141,7 @@ class SongsTab(QWidget):
                 self._centered_item(display_dur),
                 self._centered_item("fehlend" if is_missing else str(file_count)),
                 self._centered_item("—" if is_missing else f"{total_mb:.0f}"),
+                cert_item,
             ]
 
             for col, item in enumerate(items):
