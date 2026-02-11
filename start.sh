@@ -48,6 +48,18 @@ fi
 # Verzeichnisse erstellen
 mkdir -p data downloads
 
+# ffprobe prüfen (benötigt für Dauer-Erkennung)
+if ! command -v ffprobe &>/dev/null; then
+    echo -e "${YELLOW}ffprobe fehlt (benötigt für Dauer-Erkennung)${NC}"
+    if command -v apt-get &>/dev/null; then
+        echo -e "${YELLOW}Installiere ffmpeg...${NC}"
+        sudo apt-get install -y ffmpeg -qq
+    else
+        echo -e "${RED}Bitte manuell installieren: sudo apt-get install ffmpeg${NC}"
+        echo -e "${RED}Ohne ffprobe werden alle Songs als 00m00s erkannt → falsche Duplikate!${NC}"
+    fi
+fi
+
 # tkinter prüfen (benötigt für PyAutoGUI)
 if ! python3 -c "import tkinter" 2>/dev/null; then
     echo -e "${YELLOW}python3-tk fehlt (benötigt für PyAutoGUI)${NC}"

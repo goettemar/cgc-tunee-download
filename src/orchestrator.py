@@ -175,6 +175,10 @@ def _find_matching_folder(song_name: str, duration: str) -> str | None:
 
     Tries exact match first (name + duration), then name-only with
     closest duration (±2 seconds tolerance).
+
+    When multiple folders match (same song name, same/similar duration),
+    prefers EMPTY folders (not yet downloaded) so that each version gets
+    its own folder.
     """
     if not os.path.isdir(TUNEE_DIR):
         return None
@@ -182,10 +186,19 @@ def _find_matching_folder(song_name: str, duration: str) -> str | None:
     sanitized = _sanitize(song_name)
     exact_suffix = f" - {sanitized} - {duration}"
 
-    # Exact match
-    for entry in os.listdir(TUNEE_DIR):
+    # Exact match — collect ALL matching folders, prefer empty ones
+    exact_matches = []
+    for entry in sorted(os.listdir(TUNEE_DIR)):
         if entry.endswith(exact_suffix) and os.path.isdir(os.path.join(TUNEE_DIR, entry)):
-            return entry
+            exact_matches.append(entry)
+
+    if exact_matches:
+        # Prefer an empty folder (not yet downloaded)
+        for m in exact_matches:
+            if not _folder_has_files(os.path.join(TUNEE_DIR, m)):
+                return m
+        # All have files — return first (numerically lowest)
+        return exact_matches[0]
 
     # Fuzzy match: same name, duration ±2 seconds
     name_part = f" - {sanitized} - "
@@ -194,32 +207,72 @@ def _find_matching_folder(song_name: str, duration: str) -> str | None:
         return None
     target_secs = int(dur_match.group(1)) * 60 + int(dur_match.group(2))
 
-    best = None
-    best_diff = 999
-    for entry in os.listdir(TUNEE_DIR):
+    candidates = []
+    for entry in sorted(os.listdir(TUNEE_DIR)):
         if name_part not in entry:
             continue
         if not os.path.isdir(os.path.join(TUNEE_DIR, entry)):
             continue
-        # Extract duration from folder name
         m = re.search(r"(\d+)m(\d+)s$", entry)
         if not m:
             continue
         folder_secs = int(m.group(1)) * 60 + int(m.group(2))
         diff = abs(folder_secs - target_secs)
-        if diff <= 2 and diff < best_diff:
-            best = entry
-            best_diff = diff
+        if diff <= 2:
+            candidates.append((diff, entry))
 
-    return best
+    if not candidates:
+        return None
+
+    # Sort by duration-closeness, then prefer empty folders
+    candidates.sort(key=lambda c: c[0])
+    for _, entry in candidates:
+        if not _folder_has_files(os.path.join(TUNEE_DIR, entry)):
+            return entry
+    # All matching folders have files — return closest match
+    return candidates[0][1]
 
 
 def _is_already_downloaded(song_name: str, duration: str) -> bool:
-    """Check if the matching folder already has files (= already downloaded)."""
+    """Check if all matching folders already have files.
+
+    Returns False if there is at least one empty matching folder
+    (meaning this song version still needs to be downloaded).
+    """
+    if not os.path.isdir(TUNEE_DIR):
+        return False
+
+    sanitized = _sanitize(song_name)
+    exact_suffix = f" - {sanitized} - {duration}"
+
+    # Check all folders matching name + duration (exact)
+    for entry in os.listdir(TUNEE_DIR):
+        if entry.endswith(exact_suffix) and os.path.isdir(os.path.join(TUNEE_DIR, entry)):
+            if not _folder_has_files(os.path.join(TUNEE_DIR, entry)):
+                return False  # Empty matching folder exists → not a duplicate
+
+    # Also check fuzzy matches (±2 seconds)
+    name_part = f" - {sanitized} - "
+    dur_match = re.match(r"(\d+)m(\d+)s", duration)
+    if dur_match:
+        target_secs = int(dur_match.group(1)) * 60 + int(dur_match.group(2))
+        for entry in os.listdir(TUNEE_DIR):
+            if name_part not in entry or not os.path.isdir(os.path.join(TUNEE_DIR, entry)):
+                continue
+            m = re.search(r"(\d+)m(\d+)s$", entry)
+            if not m:
+                continue
+            folder_secs = int(m.group(1)) * 60 + int(m.group(2))
+            if abs(folder_secs - target_secs) <= 2:
+                if not _folder_has_files(os.path.join(TUNEE_DIR, entry)):
+                    return False  # Empty matching folder → not a duplicate
+
+    # No empty matching folder found — either all are full (true duplicate)
+    # or no matching folder exists at all (new song, not a duplicate)
     folder = _find_matching_folder(song_name, duration)
     if not folder:
         return False
-    return _folder_has_files(os.path.join(TUNEE_DIR, folder))
+    return True
 
 
 # ── Move files to folder ────────────────────────────────────────────
