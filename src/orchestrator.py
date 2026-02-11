@@ -326,19 +326,44 @@ def _move_to_subfolder(
 def _wait_for_video_download(
     before_mp4s: set[str], events: OrchestratorEvents,
 ) -> bool:
-    """Wait until a new .mp4 appears in ~/Downloads. Returns True if found."""
+    """Wait until a new .mp4 appears AND is fully downloaded.
+
+    Checks file size stability to ensure Chrome has finished writing
+    the file before returning.
+    """
     events.on_log(f"  Waiting for video download (max {VIDEO_WAIT_MAX}s)...")
+
+    mp4_path = None
+    stable_count = 0
 
     for i in range(VIDEO_WAIT_MAX // VIDEO_POLL_INTERVAL):
         if events.should_stop():
             return False
         time.sleep(VIDEO_POLL_INTERVAL)
+
         current = set(glob.glob(os.path.join(DL_DIR, "*.mp4")))
         new_files = current - before_mp4s
-        if new_files:
-            name = os.path.basename(next(iter(new_files)))
-            events.on_log(f"  {C_DONE}Video: {name}{C_RESET}")
-            return True
+
+        if new_files and not mp4_path:
+            mp4_path = next(iter(new_files))
+            events.on_log(f"  Video erschienen: {os.path.basename(mp4_path)}, warte auf vollständigen Download...")
+
+        if mp4_path:
+            try:
+                size1 = os.path.getsize(mp4_path)
+                time.sleep(2)
+                size2 = os.path.getsize(mp4_path)
+                if size1 == size2 and size1 > 0:
+                    stable_count += 1
+                    if stable_count >= 2:
+                        events.on_log(f"  {C_DONE}Video: {os.path.basename(mp4_path)} ({size2 // 1024}KB){C_RESET}")
+                        return True
+                else:
+                    stable_count = 0
+            except OSError:
+                stable_count = 0
+                continue
+
         # Check for .crdownload (still downloading)
         downloading = glob.glob(os.path.join(DL_DIR, "*.crdownload"))
         if downloading:
@@ -349,13 +374,38 @@ def _wait_for_video_download(
 
 
 def _wait_for_downloads_complete(events: OrchestratorEvents) -> None:
-    """Wait until no .crdownload files remain (all downloads finished)."""
-    for _ in range(30):
+    """Wait until no .crdownload files remain AND all files have stable size."""
+    stable_count = 0
+    for _ in range(60):
         if events.should_stop():
             return
         downloading = glob.glob(os.path.join(DL_DIR, "*.crdownload"))
-        if not downloading:
-            return
+        if downloading:
+            stable_count = 0
+            time.sleep(1)
+            continue
+
+        # No .crdownload — verify all MP4s have stable size
+        mp4s = glob.glob(os.path.join(DL_DIR, "*.mp4"))
+        all_stable = True
+        for mp4 in mp4s:
+            try:
+                s1 = os.path.getsize(mp4)
+                time.sleep(0.3)
+                s2 = os.path.getsize(mp4)
+                if s1 != s2:
+                    all_stable = False
+                    break
+            except OSError:
+                all_stable = False
+                break
+
+        if all_stable:
+            stable_count += 1
+            if stable_count >= 2:
+                return
+        else:
+            stable_count = 0
         time.sleep(1)
 
 
