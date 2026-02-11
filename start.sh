@@ -8,6 +8,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# Eltern-venv deaktivieren falls vorhanden (CGC Launcher Kompatibilitaet)
+deactivate 2>/dev/null || true
+unset VIRTUAL_ENV PYTHONHOME
+
 VENV_DIR=".venv"
 
 # Farben
