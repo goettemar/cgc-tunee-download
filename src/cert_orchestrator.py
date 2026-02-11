@@ -125,20 +125,61 @@ def _close_modals() -> None:
         time.sleep(0.5)
 
 
-def _download_certificate(
-    icon_x: int, icon_y: int, song_num: int,
-    folder_path: str, events: OrchestratorEvents,
-) -> bool:
-    """Download the certificate for one song.
+def _scroll_to_top() -> None:
+    """Scroll browser page to the very top to ensure icon-to-song alignment."""
+    off_x, off_y = get_monitor_offset()
+    sw, sh = get_screen_size()
+    pyautogui.click(round(sw * 0.5) + off_x, round(sh * 0.5) + off_y)
+    time.sleep(0.3)
+    pyautogui.hotkey("ctrl", "Home")
+    time.sleep(1.5)
 
-    Args:
-        icon_x, icon_y: Position of the download icon for this song row.
-        song_num: 1-based song number.
-        folder_path: Target folder to move the PDF into.
-        events: Event handler.
+
+def _find_folder_for_pdf(pdf_name: str) -> str | None:
+    """Find the song folder matching a certificate PDF by name.
+
+    Searches all folders in TUNEE_DIR and checks if the folder's song name
+    appears in the PDF filename (case-insensitive). Prefers the longest
+    match and folders that don't already have a PDF.
+    """
+    if not os.path.isdir(TUNEE_DIR):
+        return None
+
+    pdf_lower = pdf_name.lower()
+    candidates = []
+
+    for entry in sorted(os.listdir(TUNEE_DIR)):
+        folder_path = os.path.join(TUNEE_DIR, entry)
+        if not os.path.isdir(folder_path):
+            continue
+
+        match = re.match(r"\d+\s*-\s*(.+?)\s*-\s*\d{2}m\d{2}s$", entry)
+        if not match:
+            continue
+
+        song_name = match.group(1).strip()
+        if song_name.lower() in pdf_lower:
+            has_pdf = any(f.lower().endswith(".pdf") for f in os.listdir(folder_path))
+            candidates.append((len(song_name), has_pdf, folder_path))
+
+    if not candidates:
+        return None
+
+    # Prefer: longest name match first, then folders without existing PDF
+    candidates.sort(key=lambda c: (-c[0], c[1]))
+    return candidates[0][2]
+
+
+def _download_certificate(
+    icon_x: int, icon_y: int, events: OrchestratorEvents,
+) -> tuple[str, str | None]:
+    """Download the certificate for the song at the given icon position.
+
+    Uses name-based matching to find the correct target folder instead of
+    relying on position-based mapping.
 
     Returns:
-        True if certificate was downloaded and moved successfully.
+        (result, folder_name) where result is "ok", "duplicate", or "failed".
     """
     off_x, off_y = get_monitor_offset()
 
@@ -152,7 +193,7 @@ def _download_certificate(
     # Step 2: Find and click play button
     for attempt in range(MAX_RETRIES):
         if events.should_stop():
-            return False
+            return ("failed", None)
         screenshot = take_screenshot_bgr()
         pos = find_template(screenshot, "play_button.png", threshold=0.7)
         if pos:
@@ -161,14 +202,14 @@ def _download_certificate(
         time.sleep(0.5)
     else:
         events.on_log(f"  {C_ERR}Play button not found{C_RESET}")
-        return False
+        return ("failed", None)
 
     time.sleep(3.0)  # player needs time to fully load the new song
 
     # Step 3: Find and click three-dots menu
     for attempt in range(MAX_RETRIES):
         if events.should_stop():
-            return False
+            return ("failed", None)
         screenshot = take_screenshot_bgr()
         pos = find_template(screenshot, "three_dots.png", threshold=0.7)
         if pos:
@@ -178,14 +219,14 @@ def _download_certificate(
     else:
         events.on_log(f"  {C_ERR}Three-dots menu not found{C_RESET}")
         _close_modals()
-        return False
+        return ("failed", None)
 
     time.sleep(1)
 
     # Step 4: Find and click "Copyright certificate" menu item
     for attempt in range(MAX_RETRIES):
         if events.should_stop():
-            return False
+            return ("failed", None)
         screenshot = take_screenshot_bgr()
         pos = find_template(screenshot, "cert_menu_item.png", threshold=0.7)
         if pos:
@@ -195,7 +236,7 @@ def _download_certificate(
     else:
         events.on_log(f"  {C_ERR}Certificate menu item not found{C_RESET}")
         _close_modals()
-        return False
+        return ("failed", None)
 
     time.sleep(1.5)
 
@@ -204,7 +245,7 @@ def _download_certificate(
 
     for attempt in range(MAX_RETRIES):
         if events.should_stop():
-            return False
+            return ("failed", None)
         screenshot = take_screenshot_bgr()
         pos = find_template(screenshot, "cert_download.png", threshold=0.7)
         if pos:
@@ -214,39 +255,41 @@ def _download_certificate(
     else:
         events.on_log(f"  {C_ERR}Certificate download button not found{C_RESET}")
         _close_modals()
-        return False
+        return ("failed", None)
 
     # Step 6: Wait for PDF
     pdf_path = _wait_for_new_pdf(pdfs_before, events)
     if not pdf_path:
         events.on_log(f"  {C_ERR}PDF download timeout{C_RESET}")
         _close_modals()
-        return False
+        return ("failed", None)
 
     # Step 7: Close modals
     _close_modals()
 
-    # Step 8: Validate PDF name against expected song
+    # Step 8: Find correct folder by PDF name (name-based matching)
     pdf_name = os.path.basename(pdf_path)
+    folder_path = _find_folder_for_pdf(pdf_name)
+
+    if not folder_path:
+        events.on_log(f"  {C_WARN}Kein passender Ordner fuer '{pdf_name}'{C_RESET}")
+        return ("failed", None)
+
     folder_name = os.path.basename(folder_path)
-    # Extract song name from folder: "NN - SongName - DDmSSs"
-    folder_match = re.match(r"\d+\s*-\s*(.+?)\s*-\s*\d{2}m\d{2}s$", folder_name)
-    if folder_match:
-        expected_song = folder_match.group(1).strip()
-        if expected_song.lower() not in pdf_name.lower():
-            events.on_log(f"  {C_WARN}PDF-Name passt nicht! Erwartet '{expected_song}', "
-                          f"bekommen '{pdf_name}' — ueberspringe{C_RESET}")
-            # Don't move wrong cert — delete it
-            os.remove(pdf_path)
-            _close_modals()
-            return False
+
+    # Check if folder already has a certificate
+    existing_pdfs = [f for f in os.listdir(folder_path) if f.lower().endswith(".pdf")]
+    if existing_pdfs:
+        events.on_log(f"  {C_WARN}'{folder_name}' hat bereits ein Zertifikat{C_RESET}")
+        os.remove(pdf_path)
+        return ("duplicate", folder_name)
 
     # Step 9: Move PDF to song folder
     dst = os.path.join(folder_path, pdf_name)
     shutil.move(pdf_path, dst)
     events.on_log(f"  {C_DONE}Certificate: {pdf_name} -> {folder_name}/{C_RESET}")
 
-    return True
+    return ("ok", folder_name)
 
 
 # ── Main certificate loop ────────────────────────────────────────────
@@ -301,6 +344,10 @@ def run_cert_task(
     events.on_log(f"{'=' * 60}\n")
     events.on_progress(0, total_needed)
 
+    # Scroll to top to ensure first icon matches first song
+    _scroll_to_top()
+    events.on_log("Seite nach oben gescrollt")
+
     for scroll_round in range(max_scrolls + 1):
         if events.should_stop():
             events.on_log("Stopped by user.")
@@ -325,7 +372,7 @@ def run_cert_task(
             min_y = 0
         else:
             _, sh = get_screen_size()
-            min_y = int(sh * 0.38)
+            min_y = int(sh * 0.15)
 
         eligible = [(ix, iy, c) for ix, iy, c in icons if iy > min_y]
 
@@ -344,31 +391,29 @@ def run_cert_task(
             current_folder_num = song_idx + 1  # 1-based
 
             if song_idx in need_cert_at_index:
-                folder_path = need_certs.get(current_folder_num)
-                if folder_path:
-                    folder_name = os.path.basename(folder_path)
-                    events.on_song_start(current_folder_num, ix, iy)
-                    events.on_log(f"  Zertifikat fuer #{current_folder_num}: {folder_name}")
+                events.on_song_start(current_folder_num, ix, iy)
+                events.on_log(f"  Zertifikat fuer Icon #{current_folder_num}")
 
-                    try:
-                        success = _download_certificate(ix, iy, current_folder_num,
-                                                        folder_path, events)
-                    except pyautogui.FailSafeException:
-                        events.on_log(f"  {C_WARN}Fail-safe ausgeloest — ueberspringe{C_RESET}")
-                        _safe_mouse_position()
-                        time.sleep(1)
-                        success = False
+                try:
+                    result, folder_name = _download_certificate(ix, iy, events)
+                except pyautogui.FailSafeException:
+                    events.on_log(f"  {C_WARN}Fail-safe ausgeloest — ueberspringe{C_RESET}")
+                    _safe_mouse_position()
+                    time.sleep(1)
+                    result, folder_name = "failed", None
 
-                    if success:
-                        completed += 1
-                        events.on_song_complete(current_folder_num, folder_name)
-                        events.on_progress(completed, total_needed)
-                    else:
-                        failures += 1
-                        events.on_song_failed(current_folder_num)
+                if result == "ok":
+                    completed += 1
+                    events.on_song_complete(current_folder_num, folder_name or "?")
+                    events.on_progress(completed, total_needed)
+                elif result == "duplicate":
+                    pass
+                else:
+                    failures += 1
+                    events.on_song_failed(current_folder_num)
 
-                    if completed < total_needed and not events.should_stop():
-                        time.sleep(BETWEEN_CERTS_DELAY)
+                if completed < total_needed and not events.should_stop():
+                    time.sleep(BETWEEN_CERTS_DELAY)
 
             song_idx += 1
 
