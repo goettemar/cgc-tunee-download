@@ -49,8 +49,10 @@ def run_cert_cli(args) -> int:
 
     monitors = list_monitors()
     mon = monitors[args.monitor]
-    print(f"[OK]   Monitor {args.monitor}: {mon['width']}x{mon['height']} "
-          f"@ ({mon['left']}, {mon['top']})")
+    print(
+        f"[OK]   Monitor {args.monitor}: {mon['width']}x{mon['height']} "
+        f"@ ({mon['left']}, {mon['top']})"
+    )
     print()
 
     try:
@@ -74,7 +76,9 @@ def run_cli(args) -> int:
         monitors = list_monitors()
         for i, m in enumerate(monitors):
             label = "all combined" if i == 0 else f"monitor {i}"
-            print(f"  {i}: {label} — {m['width']}x{m['height']} @ ({m['left']}, {m['top']})")
+            print(
+                f"  {i}: {label} — {m['width']}x{m['height']} @ ({m['left']}, {m['top']})"
+            )
         return 0
 
     # Set monitor before anything else
@@ -89,8 +93,10 @@ def run_cli(args) -> int:
     # Show monitor info
     monitors = list_monitors()
     mon = monitors[args.monitor]
-    print(f"[OK]   Monitor {args.monitor}: {mon['width']}x{mon['height']} "
-          f"@ ({mon['left']}, {mon['top']})")
+    print(
+        f"[OK]   Monitor {args.monitor}: {mon['width']}x{mon['height']} "
+        f"@ ({mon['left']}, {mon['top']})"
+    )
 
     # Check display
     display = os.environ.get("DISPLAY")
@@ -129,26 +135,48 @@ def main():
 
     # Mode selection
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--gui", action="store_true", default=True,
-                      help="Launch PySide6 GUI (default)")
-    mode.add_argument("--cli", action="store_true",
-                      help="Run in command-line mode")
+    mode.add_argument(
+        "--gui", action="store_true", default=True, help="Launch PySide6 GUI (default)"
+    )
+    mode.add_argument("--cli", action="store_true", help="Run in command-line mode")
 
     # CLI-only arguments
-    parser.add_argument("--cert", action="store_true",
-                        help="[CLI] Download certificates instead of songs")
-    parser.add_argument("--no-chrome", action="store_true",
-                        help="[CLI] Don't launch Chrome (assume it's already open)")
-    parser.add_argument("--songs", type=int, default=50,
-                        help="[CLI] Max songs to download (default: 50)")
-    parser.add_argument("--scrolls", type=int, default=15,
-                        help="[CLI] Max scroll rounds (default: 15)")
-    parser.add_argument("--url", type=str, default=TUNEE_URL,
-                        help=f"[CLI] Tunee URL to open (default: {TUNEE_URL})")
-    parser.add_argument("--monitor", type=int, default=3,
-                        help="[CLI] Monitor index to capture (1-based, default: 3)")
-    parser.add_argument("--list-monitors", action="store_true",
-                        help="[CLI] List available monitors and exit")
+    parser.add_argument(
+        "--cert",
+        action="store_true",
+        help="[CLI] Download certificates instead of songs",
+    )
+    parser.add_argument(
+        "--no-chrome",
+        action="store_true",
+        help="[CLI] Don't launch Chrome (assume it's already open)",
+    )
+    parser.add_argument(
+        "--songs",
+        type=int,
+        default=50,
+        help="[CLI] Max songs to download (default: 50)",
+    )
+    parser.add_argument(
+        "--scrolls", type=int, default=15, help="[CLI] Max scroll rounds (default: 15)"
+    )
+    parser.add_argument(
+        "--url",
+        type=str,
+        default=TUNEE_URL,
+        help=f"[CLI] Tunee URL to open (default: {TUNEE_URL})",
+    )
+    parser.add_argument(
+        "--monitor",
+        type=int,
+        default=3,
+        help="[CLI] Monitor index to capture (1-based, default: 3)",
+    )
+    parser.add_argument(
+        "--list-monitors",
+        action="store_true",
+        help="[CLI] List available monitors and exit",
+    )
     args = parser.parse_args()
 
     if args.cli and args.cert:
@@ -157,6 +185,7 @@ def main():
         sys.exit(run_cli(args))
     else:
         from src.gui.app import run_gui
+
         sys.exit(run_gui())
 
 

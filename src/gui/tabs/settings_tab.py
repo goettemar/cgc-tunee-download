@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QDoubleSpinBox,
@@ -162,6 +160,7 @@ class SettingsTab(QWidget):
     def _populate_monitors(self) -> None:
         try:
             from ...screenshot import list_monitors
+
             monitors = list_monitors()
             for i, m in enumerate(monitors):
                 if i == 0:
@@ -209,7 +208,9 @@ class SettingsTab(QWidget):
         cfg.video_dl_threshold = self._video_thresh.value()
         cfg.save()
 
-        QMessageBox.information(self, "Gespeichert", "Einstellungen wurden gespeichert.")
+        QMessageBox.information(
+            self, "Gespeichert", "Einstellungen wurden gespeichert."
+        )
 
     def _check_templates(self) -> None:
         found = 0
@@ -228,5 +229,5 @@ class SettingsTab(QWidget):
         else:
             self._tmpl_status.setText(
                 f'<span style="color:{COLORS["success"]}">'
-                f'{found}/{len(REQUIRED_TEMPLATES)} Templates vorhanden</span>'
+                f"{found}/{len(REQUIRED_TEMPLATES)} Templates vorhanden</span>"
             )

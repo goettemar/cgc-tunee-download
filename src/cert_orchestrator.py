@@ -26,8 +26,6 @@ import pyautogui
 from .events import OrchestratorEvents, PrintEvents, C_DONE, C_ERR, C_WARN, C_RESET
 from .orchestrator import (
     _click_at,
-    _click_template,
-    _sanitize,
     TUNEE_DIR,
     DL_DIR,
     SONG_EXTENSIONS,
@@ -38,12 +36,13 @@ from .template_match import find_all_templates, find_template
 
 # Timing
 CERT_CLICK_DELAY = 1.5
-CERT_WAIT_MAX = 30         # max seconds to wait for PDF download
+CERT_WAIT_MAX = 30  # max seconds to wait for PDF download
 BETWEEN_CERTS_DELAY = 2
 MAX_RETRIES = 3
 
 
 # ── Helpers ──────────────────────────────────────────────────────────
+
 
 def find_folders_needing_certs() -> dict[int, str]:
     """Scan ~/Downloads/tunee/ and find folders that have songs but no PDF.
@@ -92,7 +91,9 @@ def _get_pdf_files() -> set[str]:
 
 
 def _wait_for_new_pdf(
-    before: set[str], events: OrchestratorEvents, timeout: int = CERT_WAIT_MAX,
+    before: set[str],
+    events: OrchestratorEvents,
+    timeout: int = CERT_WAIT_MAX,
 ) -> str | None:
     """Wait for a new PDF to appear in ~/Downloads/. Returns path or None."""
     for _ in range(timeout):
@@ -171,7 +172,9 @@ def _find_folder_for_pdf(pdf_name: str) -> str | None:
 
 
 def _download_certificate(
-    icon_x: int, icon_y: int, events: OrchestratorEvents,
+    icon_x: int,
+    icon_y: int,
+    events: OrchestratorEvents,
 ) -> tuple[str, str | None]:
     """Download the certificate for the song at the given icon position.
 
@@ -294,6 +297,7 @@ def _download_certificate(
 
 # ── Main certificate loop ────────────────────────────────────────────
 
+
 def run_cert_task(
     max_songs: int = 50,
     max_scrolls: int = 15,
@@ -322,8 +326,10 @@ def run_cert_task(
         events.on_log(f"{C_DONE}Alle Ordner haben bereits Zertifikate!{C_RESET}")
         return True
 
-    events.on_log(f"{len(need_certs)} Ordner brauchen Zertifikate: "
-                  f"{sorted(need_certs.keys())}")
+    events.on_log(
+        f"{len(need_certs)} Ordner brauchen Zertifikate: "
+        f"{sorted(need_certs.keys())}"
+    )
 
     # Step 3: Build set of song indices needing certs (0-based)
     # Folder number N -> song index N-1 in CDP list
@@ -358,7 +364,9 @@ def run_cert_task(
         icons = find_all_templates(screenshot, "download_button.png", threshold=0.7)
 
         if not icons:
-            events.on_log(f"{C_WARN}Keine Download-Icons auf dem Screen (Runde {scroll_round}){C_RESET}")
+            events.on_log(
+                f"{C_WARN}Keine Download-Icons auf dem Screen (Runde {scroll_round}){C_RESET}"
+            )
             break
 
         # Sort top-to-bottom
@@ -397,7 +405,9 @@ def run_cert_task(
                 try:
                     result, folder_name = _download_certificate(ix, iy, events)
                 except pyautogui.FailSafeException:
-                    events.on_log(f"  {C_WARN}Fail-safe ausgeloest — ueberspringe{C_RESET}")
+                    events.on_log(
+                        f"  {C_WARN}Fail-safe ausgeloest — ueberspringe{C_RESET}"
+                    )
                     _safe_mouse_position()
                     time.sleep(1)
                     result, folder_name = "failed", None

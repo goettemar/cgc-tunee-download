@@ -30,9 +30,12 @@ def list_monitors() -> list[dict]:
     """Return all monitors as dicts with left/top/width/height."""
     if _is_wayland:
         w, h = get_screen_size()
-        return [{"left": 0, "top": 0, "width": w, "height": h},
-                {"left": 0, "top": 0, "width": w, "height": h}]
+        return [
+            {"left": 0, "top": 0, "width": w, "height": h},
+            {"left": 0, "top": 0, "width": w, "height": h},
+        ]
     import mss
+
     with mss.mss() as sct:
         return list(sct.monitors)
 
@@ -42,6 +45,7 @@ def get_monitor_offset() -> tuple[int, int]:
     if _is_wayland:
         return 0, 0
     import mss
+
     with mss.mss() as sct:
         mon = sct.monitors[_monitor_idx]
         return mon["left"], mon["top"]
@@ -52,6 +56,7 @@ def get_screen_size() -> tuple[int, int]:
     if _is_wayland:
         return _get_screen_size_wayland()
     import mss
+
     with mss.mss() as sct:
         mon = sct.monitors[_monitor_idx]
         return mon["width"], mon["height"]
@@ -74,6 +79,7 @@ def _get_screen_size_wayland() -> tuple[int, int]:
 
 
 # ── Wayland capture backends ──────────────────────────────────────────
+
 
 def _get_helper() -> subprocess.Popen | None:
     """Get or start the persistent portal helper process."""
@@ -114,7 +120,11 @@ def _capture_portal() -> Image.Image | None:
         helper.stdin.write(tmp_path + "\n")
         helper.stdin.flush()
         response = helper.stdout.readline().strip()
-        if response == "OK" and os.path.exists(tmp_path) and os.path.getsize(tmp_path) > 0:
+        if (
+            response == "OK"
+            and os.path.exists(tmp_path)
+            and os.path.getsize(tmp_path) > 0
+        ):
             return Image.open(tmp_path).convert("RGB")
     except (BrokenPipeError, OSError):
         # Helper died, reset for next call
@@ -136,7 +146,8 @@ def _capture_gnome_screenshot() -> Image.Image:
     try:
         subprocess.run(
             ["gnome-screenshot", "-f", tmp_path],
-            capture_output=True, timeout=10,
+            capture_output=True,
+            timeout=10,
         )
         return Image.open(tmp_path).convert("RGB")
     finally:
@@ -172,6 +183,7 @@ def take_screenshot() -> tuple[str, tuple[int, int]]:
         img = _capture_wayland()
     else:
         import mss
+
         with mss.mss() as sct:
             shot = sct.grab(sct.monitors[_monitor_idx])
             img = Image.frombytes("RGB", shot.size, shot.bgra, "raw", "BGRX")
@@ -197,9 +209,12 @@ def take_screenshot_bgr():
         return arr[:, :, ::-1].copy()  # RGB → BGR
 
     import mss
+
     with mss.mss() as sct:
         shot = sct.grab(sct.monitors[_monitor_idx])
-        img = np.frombuffer(shot.bgra, dtype=np.uint8).reshape(shot.height, shot.width, 4)
+        img = np.frombuffer(shot.bgra, dtype=np.uint8).reshape(
+            shot.height, shot.width, 4
+        )
         return img[:, :, :3].copy()  # drop alpha, keep BGR
 
 

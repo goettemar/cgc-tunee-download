@@ -17,7 +17,6 @@ from pathlib import Path
 
 import mss
 import mss.tools
-import numpy as np
 from PIL import Image
 
 TEMPLATES_DIR = Path(__file__).parent / "old_code" / "templates"

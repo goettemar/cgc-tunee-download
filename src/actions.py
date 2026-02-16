@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 import pyautogui
 
-from .screenshot import get_screen_size, get_image_size, get_monitor_offset
+from .screenshot import get_screen_size, get_monitor_offset
 
 # Safety: don't move to (0,0) corner instantly
 pyautogui.FAILSAFE = True
@@ -24,7 +24,9 @@ class ParsedAction:
     raw: str  # original response text
 
 
-def _extract_coords(box_str: str, img_size: tuple[int, int] | None = None) -> tuple[int, int]:
+def _extract_coords(
+    box_str: str, img_size: tuple[int, int] | None = None
+) -> tuple[int, int]:
     """Extract (x, y) from '<|box_start|>(x,y)<|box_end|>' and scale to absolute desktop pixels.
 
     UI-TARS outputs coordinates in the pixel space of the image it processed.
@@ -71,7 +73,9 @@ def parse_response(text: str) -> ParsedAction:
     if not action_line:
         # Fallback: search for any action pattern in the full text
         # Match known action names followed by parenthesized args
-        actions_re = r"(click|left_double|right_single|type|hotkey|scroll|drag|wait|finished)\("
+        actions_re = (
+            r"(click|left_double|right_single|type|hotkey|scroll|drag|wait|finished)\("
+        )
         m_fb = re.search(actions_re, text)
         if m_fb:
             # Extract from the action name to the matching closing paren
@@ -85,7 +89,7 @@ def parse_response(text: str) -> ParsedAction:
                 elif ch == ")":
                     depth -= 1
                     if depth == 0:
-                        action_line = action_line[:i + 1]
+                        action_line = action_line[: i + 1]
                         break
         else:
             action_line = text.strip().splitlines()[-1].strip()
@@ -96,19 +100,32 @@ def parse_response(text: str) -> ParsedAction:
     # Parse action call: name(params) — allow trailing junk after closing paren
     m = re.match(r"(\w+)\((.*)\)", action_line, re.DOTALL)
     if not m:
-        return ParsedAction(thought=thought, action_type="unknown", params={"raw": action_line}, raw=text)
+        return ParsedAction(
+            thought=thought,
+            action_type="unknown",
+            params={"raw": action_line},
+            raw=text,
+        )
 
     action_type = m.group(1)
     params_str = m.group(2)
 
     params: dict = {}
     # Parse keyword arguments: key='value' or key="value" or key=number
-    for km in re.finditer(r"(\w+)\s*=\s*(?:'([^']*)'|\"([^\"]*)\"|(\d+(?:\.\d+)?))", params_str):
+    for km in re.finditer(
+        r"(\w+)\s*=\s*(?:'([^']*)'|\"([^\"]*)\"|(\d+(?:\.\d+)?))", params_str
+    ):
         key = km.group(1)
-        val = km.group(2) if km.group(2) is not None else km.group(3) if km.group(3) is not None else km.group(4)
+        val = (
+            km.group(2)
+            if km.group(2) is not None
+            else km.group(3) if km.group(3) is not None else km.group(4)
+        )
         params[key] = val
 
-    return ParsedAction(thought=thought, action_type=action_type, params=params, raw=text)
+    return ParsedAction(
+        thought=thought, action_type=action_type, params=params, raw=text
+    )
 
 
 def execute(action: ParsedAction, img_size: tuple[int, int] | None = None) -> bool:
@@ -132,7 +149,11 @@ def execute(action: ParsedAction, img_size: tuple[int, int] | None = None) -> bo
 
     elif at == "type":
         content = action.params.get("content", "")
-        pyautogui.typewrite(content, interval=0.03) if content.isascii() else pyautogui.write(content)
+        (
+            pyautogui.typewrite(content, interval=0.03)
+            if content.isascii()
+            else pyautogui.write(content)
+        )
 
     elif at == "hotkey":
         keys = action.params.get("key", "").split("+")

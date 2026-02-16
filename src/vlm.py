@@ -30,7 +30,9 @@ def check_ollama_running() -> bool:
         return False
 
 
-def ask_vlm(screenshot_b64: str, task: str, action_history: list[str] | None = None) -> str:
+def ask_vlm(
+    screenshot_b64: str, task: str, action_history: list[str] | None = None
+) -> str:
     """Send screenshot + task to UI-TARS via Ollama /api/generate endpoint.
 
     The Ollama model has TEMPLATE={{ .Prompt }} and a built-in SYSTEM message,
@@ -48,16 +50,18 @@ def ask_vlm(screenshot_b64: str, task: str, action_history: list[str] | None = N
     if action_history:
         prompt += "\n\nAction History:\n" + "\n".join(action_history)
 
-    payload = json.dumps({
-        "model": MODEL,
-        "prompt": prompt,
-        "images": [screenshot_b64],
-        "stream": False,
-        "options": {
-            "temperature": 0.1,
-            "num_predict": 256,
-        },
-    }).encode()
+    payload = json.dumps(
+        {
+            "model": MODEL,
+            "prompt": prompt,
+            "images": [screenshot_b64],
+            "stream": False,
+            "options": {
+                "temperature": 0.1,
+                "num_predict": 256,
+            },
+        }
+    ).encode()
 
     req = urllib.request.Request(
         f"{OLLAMA_URL}/api/generate",

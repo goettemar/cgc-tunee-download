@@ -68,11 +68,15 @@ class PrintEvents(OrchestratorEvents):
         print(f"  Progress: {current}/{total}")
 
     def on_scroll(self, round_num: int) -> None:
-        print(f"\n{C_STEP}Scrolling down for more songs... (round {round_num}){C_RESET}")
+        print(
+            f"\n{C_STEP}Scrolling down for more songs... (round {round_num}){C_RESET}"
+        )
 
     def on_icons_found(self, count: int, round_num: int) -> None:
-        print(f"\n{C_STEP}Found {count} download icons "
-              f"(scroll round {round_num}){C_RESET}")
+        print(
+            f"\n{C_STEP}Found {count} download icons "
+            f"(scroll round {round_num}){C_RESET}"
+        )
 
 
 class SignalEvents(OrchestratorEvents):

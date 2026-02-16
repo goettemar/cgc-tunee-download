@@ -11,8 +11,9 @@ import os
 import sys
 
 import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gio, GLib
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gio, GLib  # noqa: E402
 
 
 def take_screenshot(dest_path: str) -> bool:
@@ -23,41 +24,52 @@ def take_screenshot(dest_path: str) -> bool:
     def on_response(conn, sender, path, iface, signal, params, _):
         response, results = params.unpack()
         if response == 0:
-            result_uri[0] = results.get('uri', '')
+            result_uri[0] = results.get("uri", "")
         loop.quit()
 
     bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     sub_id = bus.signal_subscribe(
-        'org.freedesktop.portal.Desktop',
-        'org.freedesktop.portal.Request',
-        'Response', None, None,
+        "org.freedesktop.portal.Desktop",
+        "org.freedesktop.portal.Request",
+        "Response",
+        None,
+        None,
         Gio.DBusSignalFlags.NO_MATCH_RULE,
-        on_response, None,
+        on_response,
+        None,
     )
 
     bus.call_sync(
-        'org.freedesktop.portal.Desktop',
-        '/org/freedesktop/portal/desktop',
-        'org.freedesktop.portal.Screenshot',
-        'Screenshot',
-        GLib.Variant('(sa{sv})', ('', {
-            'interactive': GLib.Variant('b', False),
-        })),
-        GLib.VariantType('(o)'),
+        "org.freedesktop.portal.Desktop",
+        "/org/freedesktop/portal/desktop",
+        "org.freedesktop.portal.Screenshot",
+        "Screenshot",
+        GLib.Variant(
+            "(sa{sv})",
+            (
+                "",
+                {
+                    "interactive": GLib.Variant("b", False),
+                },
+            ),
+        ),
+        GLib.VariantType("(o)"),
         Gio.DBusCallFlags.NONE,
-        5000, None,
+        5000,
+        None,
     )
 
     GLib.timeout_add(5000, lambda: (loop.quit(), False)[1])
     loop.run()
     bus.signal_unsubscribe(sub_id)
 
-    if result_uri[0] and result_uri[0].startswith('file://'):
+    if result_uri[0] and result_uri[0].startswith("file://"):
         src = result_uri[0][7:]
         try:
             os.rename(src, dest_path)
         except OSError:
             import shutil
+
             shutil.move(src, dest_path)
         return True
     return False

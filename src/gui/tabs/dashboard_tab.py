@@ -25,13 +25,19 @@ from ..workers import CertWorker, DownloadWorker, ScanWorker
 
 TEMPLATES_DIR = Path(__file__).parent.parent.parent.parent / "old_code" / "templates"
 REQUIRED_TEMPLATES = [
-    "download_button.png", "modal_mp3.png", "modal_raw.png",
-    "modal_video.png", "modal_lrc.png", "lyric_video_download.png",
+    "download_button.png",
+    "modal_mp3.png",
+    "modal_raw.png",
+    "modal_video.png",
+    "modal_lrc.png",
+    "lyric_video_download.png",
 ]
 
 CERT_TEMPLATES = [
-    "play_button.png", "three_dots.png",
-    "cert_menu_item.png", "cert_download.png",
+    "play_button.png",
+    "three_dots.png",
+    "cert_menu_item.png",
+    "cert_download.png",
 ]
 
 # Strip ANSI escape sequences for GUI log
@@ -112,7 +118,9 @@ class DashboardTab(QWidget):
 
         # Current song label
         self._current_label = QLabel("Bereit")
-        self._current_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 12px;")
+        self._current_label.setStyleSheet(
+            f"color: {COLORS['text_muted']}; font-size: 12px;"
+        )
         cl.addWidget(self._current_label)
 
         layout.addWidget(ctrl)
@@ -120,7 +128,9 @@ class DashboardTab(QWidget):
         # Statistics
         stats = QGroupBox("Statistik")
         sl = QHBoxLayout(stats)
-        w, self._val_downloaded = self._stat_label("0", "Heruntergeladen", COLORS["success"])
+        w, self._val_downloaded = self._stat_label(
+            "0", "Heruntergeladen", COLORS["success"]
+        )
         sl.addWidget(w)
         w, self._val_duplicates = self._stat_label("0", "Duplikate", COLORS["warning"])
         sl.addWidget(w)
@@ -156,9 +166,6 @@ class DashboardTab(QWidget):
     # ── Preflight ────────────────────────────────────────────────
 
     def _run_preflight(self) -> None:
-        state = get_state()
-        cfg = state.config
-
         # Display
         display = os.environ.get("DISPLAY", "")
         if display:
@@ -169,6 +176,7 @@ class DashboardTab(QWidget):
         # Monitor
         try:
             from ...screenshot import get_screen_size
+
             w, h = get_screen_size()
             self._set_check("monitor", True, f"Monitor: {w}x{h}")
         except Exception as e:
@@ -177,12 +185,12 @@ class DashboardTab(QWidget):
         # Templates
         found = sum(1 for t in REQUIRED_TEMPLATES if (TEMPLATES_DIR / t).exists())
         total = len(REQUIRED_TEMPLATES)
-        self._set_check("templates", found == total,
-                        f"Templates: {found}/{total}")
+        self._set_check("templates", found == total, f"Templates: {found}/{total}")
 
         # Chrome (check CDP port)
         try:
             import requests
+
             r = requests.get("http://127.0.0.1:9222/json/version", timeout=2)
             if r.status_code == 200:
                 self._set_check("chrome", True, "Chrome: läuft (CDP aktiv)")
@@ -235,8 +243,10 @@ class DashboardTab(QWidget):
     def _on_scan_complete(self, status: list) -> None:
         complete = sum(1 for s in status if s["complete"])
         missing = len(status) - complete
-        self._append_log(f"[INFO] Projekt bereit: {len(status)} Songs, "
-                         f"{complete} fertig, {missing} fehlend")
+        self._append_log(
+            f"[INFO] Projekt bereit: {len(status)} Songs, "
+            f"{complete} fertig, {missing} fehlend"
+        )
         if self._songs_tab:
             self._songs_tab.refresh()
 
@@ -349,7 +359,9 @@ class DashboardTab(QWidget):
         state.downloaded += 1
         self._update_stats()
         self._current_label.setText(f"Song #{num} — {folder}")
-        self._current_label.setStyleSheet(f"color: {COLORS['success']}; font-size: 12px;")
+        self._current_label.setStyleSheet(
+            f"color: {COLORS['success']}; font-size: 12px;"
+        )
         if self._songs_tab:
             self._songs_tab.refresh()
 
@@ -358,7 +370,9 @@ class DashboardTab(QWidget):
         state.duplicates += 1
         self._update_stats()
         self._current_label.setText(f"Song #{num} — Duplikat: {name} ({duration})")
-        self._current_label.setStyleSheet(f"color: {COLORS['warning']}; font-size: 12px;")
+        self._current_label.setStyleSheet(
+            f"color: {COLORS['warning']}; font-size: 12px;"
+        )
 
     def _on_song_failed(self, num: int) -> None:
         state = get_state()
@@ -380,10 +394,14 @@ class DashboardTab(QWidget):
 
         if success:
             self._current_label.setText(f"Fertig — {message}")
-            self._current_label.setStyleSheet(f"color: {COLORS['success']}; font-size: 12px;")
+            self._current_label.setStyleSheet(
+                f"color: {COLORS['success']}; font-size: 12px;"
+            )
         else:
             self._current_label.setText(f"Beendet — {message}")
-            self._current_label.setStyleSheet(f"color: {COLORS['warning']}; font-size: 12px;")
+            self._current_label.setStyleSheet(
+                f"color: {COLORS['warning']}; font-size: 12px;"
+            )
 
         self._run_preflight()
 

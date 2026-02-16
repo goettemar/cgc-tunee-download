@@ -39,8 +39,11 @@ class _Header(QWidget):
         font.setPixelSize(22)
         font.setBold(True)
         p.setFont(font)
-        p.drawText(self.rect().adjusted(24, 0, 0, 0),
-                   Qt.AlignmentFlag.AlignVCenter, self._title)
+        p.drawText(
+            self.rect().adjusted(24, 0, 0, 0),
+            Qt.AlignmentFlag.AlignVCenter,
+            self._title,
+        )
         p.end()
 
 

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -34,7 +33,9 @@ class AppConfig:
         if CONFIG_FILE.exists():
             try:
                 data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-                return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+                return cls(
+                    **{k: v for k, v in data.items() if k in cls.__dataclass_fields__}
+                )
             except Exception:
                 pass
         return cls()

@@ -11,7 +11,6 @@ import json
 import requests
 import websocket
 
-
 CDP_URL = "http://127.0.0.1:9222"
 
 # JavaScript to extract ALL songs from the tunee.ai DOM in page order.
@@ -74,14 +73,18 @@ def _get_ws_url() -> str:
 
 def _cdp_evaluate(ws: websocket.WebSocket, expression: str, msg_id: int):
     """Execute JavaScript via CDP Runtime.evaluate and return the result."""
-    ws.send(json.dumps({
-        "id": msg_id,
-        "method": "Runtime.evaluate",
-        "params": {
-            "expression": expression,
-            "returnByValue": True,
-        },
-    }))
+    ws.send(
+        json.dumps(
+            {
+                "id": msg_id,
+                "method": "Runtime.evaluate",
+                "params": {
+                    "expression": expression,
+                    "returnByValue": True,
+                },
+            }
+        )
+    )
     while True:
         resp = json.loads(ws.recv())
         if resp.get("id") == msg_id:

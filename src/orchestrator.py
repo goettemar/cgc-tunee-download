@@ -17,7 +17,15 @@ import time
 
 import pyautogui
 
-from .events import OrchestratorEvents, PrintEvents, C_TMPL, C_DONE, C_ERR, C_WARN, C_RESET
+from .events import (
+    OrchestratorEvents,
+    PrintEvents,
+    C_TMPL,
+    C_DONE,
+    C_ERR,
+    C_WARN,
+    C_RESET,
+)
 from .screenshot import take_screenshot_bgr, get_monitor_offset, get_screen_size
 from .template_match import find_template, find_all_templates, find_button_in_row
 
@@ -31,10 +39,10 @@ MODAL_ROW_THRESHOLD = 0.7
 VIDEO_DL_THRESHOLD = 0.7
 
 # Timing
-CLICK_DELAY = 1.5        # seconds after each click
-VIDEO_WAIT_MAX = 90       # max seconds to wait for video download
-VIDEO_POLL_INTERVAL = 3   # seconds between download checks
-BETWEEN_SONGS_DELAY = 3   # seconds pause between songs
+CLICK_DELAY = 1.5  # seconds after each click
+VIDEO_WAIT_MAX = 90  # max seconds to wait for video download
+VIDEO_POLL_INTERVAL = 3  # seconds between download checks
+BETWEEN_SONGS_DELAY = 3  # seconds pause between songs
 
 MAX_RETRIES = 5
 
@@ -43,6 +51,7 @@ SONG_EXTENSIONS = {".mp3", ".wav", ".flac", ".lrc", ".mp4"}
 
 
 # ── Helpers ──────────────────────────────────────────────────────────
+
 
 def _click_at(x: int, y: int, label: str, events: OrchestratorEvents) -> None:
     """Click at screenshot coordinates (adds monitor offset)."""
@@ -66,9 +75,18 @@ def _get_duration(mp3_path: str) -> str:
     """Get duration from an audio file via ffprobe. Returns e.g. '04m10s'."""
     try:
         out = subprocess.check_output(
-            ["ffprobe", "-v", "quiet", "-show_entries",
-             "format=duration", "-of", "csv=p=0", mp3_path],
-            text=True, timeout=10,
+            [
+                "ffprobe",
+                "-v",
+                "quiet",
+                "-show_entries",
+                "format=duration",
+                "-of",
+                "csv=p=0",
+                mp3_path,
+            ],
+            text=True,
+            timeout=10,
         ).strip()
         secs = float(out)
         m, s = divmod(int(secs), 60)
@@ -79,7 +97,7 @@ def _get_duration(mp3_path: str) -> str:
 
 def _sanitize(name: str) -> str:
     """Remove characters that are problematic in folder names."""
-    return re.sub(r'[<>:"/\\|?*]', '_', name).strip('. ')
+    return re.sub(r'[<>:"/\\|?*]', "_", name).strip(". ")
 
 
 def _duration_display_to_folder(display: str) -> str:
@@ -101,6 +119,7 @@ def _folder_has_files(folder_path: str) -> bool:
 
 
 # ── Project preparation ──────────────────────────────────────────────
+
 
 def prepare_project(songs: list[dict]) -> list[dict]:
     """Create empty folders for all songs from scraper data.
@@ -124,13 +143,15 @@ def prepare_project(songs: list[dict]) -> list[dict]:
         os.makedirs(folder_path, exist_ok=True)
 
         complete = _folder_has_files(folder_path)
-        result.append({
-            "num": i,
-            "name": song["name"],
-            "duration": dur,
-            "folder": folder_name,
-            "complete": complete,
-        })
+        result.append(
+            {
+                "num": i,
+                "name": song["name"],
+                "duration": dur,
+                "folder": folder_name,
+                "complete": complete,
+            }
+        )
 
     return result
 
@@ -144,8 +165,9 @@ def get_project_status() -> dict:
     if not os.path.isdir(TUNEE_DIR):
         return {"total": 0, "complete": 0, "missing": 0, "missing_nums": []}
 
-    folders = sorted(d for d in os.listdir(TUNEE_DIR)
-                     if os.path.isdir(os.path.join(TUNEE_DIR, d)))
+    folders = sorted(
+        d for d in os.listdir(TUNEE_DIR) if os.path.isdir(os.path.join(TUNEE_DIR, d))
+    )
     total = len(folders)
     complete = 0
     missing_nums = []
@@ -170,6 +192,7 @@ def get_project_status() -> dict:
 
 # ── Duplicate check (folder-based) ──────────────────────────────────
 
+
 def _find_matching_folder(song_name: str, duration: str) -> str | None:
     """Find the pre-created folder matching this song.
 
@@ -189,7 +212,9 @@ def _find_matching_folder(song_name: str, duration: str) -> str | None:
     # Exact match — collect ALL matching folders, prefer empty ones
     exact_matches = []
     for entry in sorted(os.listdir(TUNEE_DIR)):
-        if entry.endswith(exact_suffix) and os.path.isdir(os.path.join(TUNEE_DIR, entry)):
+        if entry.endswith(exact_suffix) and os.path.isdir(
+            os.path.join(TUNEE_DIR, entry)
+        ):
             exact_matches.append(entry)
 
     if exact_matches:
@@ -247,7 +272,9 @@ def _is_already_downloaded(song_name: str, duration: str) -> bool:
 
     # Check all folders matching name + duration (exact)
     for entry in os.listdir(TUNEE_DIR):
-        if entry.endswith(exact_suffix) and os.path.isdir(os.path.join(TUNEE_DIR, entry)):
+        if entry.endswith(exact_suffix) and os.path.isdir(
+            os.path.join(TUNEE_DIR, entry)
+        ):
             if not _folder_has_files(os.path.join(TUNEE_DIR, entry)):
                 return False  # Empty matching folder exists → not a duplicate
 
@@ -257,7 +284,9 @@ def _is_already_downloaded(song_name: str, duration: str) -> bool:
     if dur_match:
         target_secs = int(dur_match.group(1)) * 60 + int(dur_match.group(2))
         for entry in os.listdir(TUNEE_DIR):
-            if name_part not in entry or not os.path.isdir(os.path.join(TUNEE_DIR, entry)):
+            if name_part not in entry or not os.path.isdir(
+                os.path.join(TUNEE_DIR, entry)
+            ):
                 continue
             m = re.search(r"(\d+)m(\d+)s$", entry)
             if not m:
@@ -277,8 +306,11 @@ def _is_already_downloaded(song_name: str, duration: str) -> bool:
 
 # ── Move files to folder ────────────────────────────────────────────
 
+
 def _move_to_subfolder(
-    new_files: set[str], song_num: int, events: OrchestratorEvents,
+    new_files: set[str],
+    song_num: int,
+    events: OrchestratorEvents,
 ) -> tuple[str | None, str, str]:
     """Move new downloads into the matching pre-created folder.
 
@@ -323,8 +355,10 @@ def _move_to_subfolder(
 
 # ── Download helpers ─────────────────────────────────────────────────
 
+
 def _wait_for_video_download(
-    before_mp4s: set[str], events: OrchestratorEvents,
+    before_mp4s: set[str],
+    events: OrchestratorEvents,
 ) -> bool:
     """Wait until a new .mp4 appears AND is fully downloaded.
 
@@ -346,7 +380,9 @@ def _wait_for_video_download(
 
         if new_files and not mp4_path:
             mp4_path = next(iter(new_files))
-            events.on_log(f"  Video erschienen: {os.path.basename(mp4_path)}, warte auf vollständigen Download...")
+            events.on_log(
+                f"  Video erschienen: {os.path.basename(mp4_path)}, warte auf vollständigen Download..."
+            )
 
         if mp4_path:
             try:
@@ -356,7 +392,9 @@ def _wait_for_video_download(
                 if size1 == size2 and size1 > 0:
                     stable_count += 1
                     if stable_count >= 2:
-                        events.on_log(f"  {C_DONE}Video: {os.path.basename(mp4_path)} ({size2 // 1024}KB){C_RESET}")
+                        events.on_log(
+                            f"  {C_DONE}Video: {os.path.basename(mp4_path)} ({size2 // 1024}KB){C_RESET}"
+                        )
                         return True
                 else:
                     stable_count = 0
@@ -410,14 +448,18 @@ def _wait_for_downloads_complete(events: OrchestratorEvents) -> None:
 
 
 def _click_modal_row(
-    tmpl_name: str, label: str, events: OrchestratorEvents,
+    tmpl_name: str,
+    label: str,
+    events: OrchestratorEvents,
 ) -> bool:
     """Find a modal row icon and click its Download button. Returns True if clicked."""
     for attempt in range(MAX_RETRIES):
         if events.should_stop():
             return False
         screenshot = take_screenshot_bgr()
-        pos = find_button_in_row(screenshot, tmpl_name, row_threshold=MODAL_ROW_THRESHOLD)
+        pos = find_button_in_row(
+            screenshot, tmpl_name, row_threshold=MODAL_ROW_THRESHOLD
+        )
         if pos:
             _click_at(pos[0], pos[1], label, events)
             time.sleep(CLICK_DELAY)
@@ -427,7 +469,9 @@ def _click_modal_row(
 
 
 def _click_template(
-    tmpl_name: str, label: str, events: OrchestratorEvents,
+    tmpl_name: str,
+    label: str,
+    events: OrchestratorEvents,
     threshold: float = 0.7,
 ) -> bool:
     """Find and click a template. Returns True if clicked."""
@@ -444,8 +488,9 @@ def _click_template(
     return False
 
 
-def _wait_for_new_mp3(files_before: set[str], events: OrchestratorEvents,
-                      timeout: int = 30) -> str | None:
+def _wait_for_new_mp3(
+    files_before: set[str], events: OrchestratorEvents, timeout: int = 30
+) -> str | None:
     """Wait for a new MP3 to appear in ~/Downloads. Returns path or None."""
     for _ in range(timeout):
         if events.should_stop():
@@ -463,8 +508,12 @@ def _wait_for_new_mp3(files_before: set[str], events: OrchestratorEvents,
 
 # ── Single song download ────────────────────────────────────────────
 
+
 def _download_song(
-    icon_x: int, icon_y: int, song_num: int, events: OrchestratorEvents,
+    icon_x: int,
+    icon_y: int,
+    song_num: int,
+    events: OrchestratorEvents,
 ) -> tuple[str, str, str]:
     """Download all formats for one song.
 
@@ -499,13 +548,17 @@ def _download_song(
     duration = _get_duration(mp3_path)
 
     if _is_already_downloaded(song_name, duration):
-        events.on_log(f"  {C_WARN}ALREADY DOWNLOADED: {song_name} ({duration}) — skipping{C_RESET}")
+        events.on_log(
+            f"  {C_WARN}ALREADY DOWNLOADED: {song_name} ({duration}) — skipping{C_RESET}"
+        )
         os.remove(mp3_path)
         pyautogui.press("escape")
         time.sleep(1)
         return "duplicate", song_name, duration
 
-    events.on_log(f"  New song: {song_name} ({duration}) — downloading remaining formats")
+    events.on_log(
+        f"  New song: {song_name} ({duration}) — downloading remaining formats"
+    )
 
     # Step 4: Click RAW Download
     if not _click_modal_row("modal_raw.png", "RAW Download", events):
@@ -533,7 +586,9 @@ def _download_song(
 
     # Step 7: Click Download in Lyric Video modal (closes both modals automatically)
     time.sleep(1)
-    if _click_template("lyric_video_download.png", "Video DL Button", events, VIDEO_DL_THRESHOLD):
+    if _click_template(
+        "lyric_video_download.png", "Video DL Button", events, VIDEO_DL_THRESHOLD
+    ):
         events.on_log(f"  {C_DONE}VIDEO DL ✓{C_RESET}")
         _wait_for_video_download(mp4s_before, events)
     else:
@@ -549,6 +604,7 @@ def _download_song(
 
 
 # ── Main download loop ───────────────────────────────────────────────
+
 
 def run_task(
     max_songs: int = 50,
@@ -567,7 +623,6 @@ def run_task(
     song_count = start_num
     duplicates = 0
     failures = 0
-    last_bottom_y = 0
 
     os.makedirs(TUNEE_DIR, exist_ok=True)
 
@@ -576,8 +631,10 @@ def run_task(
     events.on_log(f"  Template Downloader — max {max_songs} songs")
     events.on_log(f"  Output: {TUNEE_DIR}")
     if status["total"] > 0:
-        events.on_log(f"  Projekt: {status['total']} Songs, "
-                      f"{status['complete']} fertig, {status['missing']} fehlend")
+        events.on_log(
+            f"  Projekt: {status['total']} Songs, "
+            f"{status['complete']} fertig, {status['missing']} fehlend"
+        )
     events.on_log(f"{'=' * 60}\n")
     events.on_progress(song_count, max_songs)
 
@@ -589,13 +646,17 @@ def run_task(
             break
 
         screenshot = take_screenshot_bgr()
-        icons = find_all_templates(screenshot, "download_button.png",
-                                   threshold=DL_ICON_THRESHOLD)
+        icons = find_all_templates(
+            screenshot, "download_button.png", threshold=DL_ICON_THRESHOLD
+        )
 
         if not icons:
-            events.on_log(f"{C_ERR}No download icons found on screen (round {scroll_round}){C_RESET}")
-            events.on_log(f"  Saving debug screenshot to /tmp/cgc_debug_no_icons.png")
+            events.on_log(
+                f"{C_ERR}No download icons found on screen (round {scroll_round}){C_RESET}"
+            )
+            events.on_log("  Saving debug screenshot to /tmp/cgc_debug_no_icons.png")
             import cv2 as _cv2
+
             _cv2.imwrite("/tmp/cgc_debug_no_icons.png", screenshot)
             break
 
@@ -618,8 +679,9 @@ def run_task(
             if scroll_round < max_scrolls:
                 off_x, off_y = get_monitor_offset()
                 sw, sh = get_screen_size()
-                pyautogui.scroll(-5, x=round(sw * 0.15) + off_x,
-                                 y=round(sh * 0.5) + off_y)
+                pyautogui.scroll(
+                    -5, x=round(sw * 0.15) + off_x, y=round(sh * 0.5) + off_y
+                )
                 time.sleep(2)
             continue
 
@@ -641,13 +703,13 @@ def run_task(
                 events.on_song_duplicate(tentative_num, song_name, duration)
             elif result == "ok":
                 song_count += 1
-                events.on_song_complete(song_count, f"{_sanitize(song_name)} - {duration}")
+                events.on_song_complete(
+                    song_count, f"{_sanitize(song_name)} - {duration}"
+                )
                 events.on_progress(song_count, max_songs)
             else:
                 failures += 1
                 events.on_song_failed(tentative_num)
-
-            last_bottom_y = iy
 
             if song_count < max_songs and not events.should_stop():
                 events.on_log(f"  Waiting {BETWEEN_SONGS_DELAY}s before next song...")
@@ -668,8 +730,7 @@ def run_task(
             events.on_scroll(scroll_round)
             off_x, off_y = get_monitor_offset()
             sw, sh = get_screen_size()
-            pyautogui.scroll(-5, x=round(sw * 0.15) + off_x,
-                             y=round(sh * 0.5) + off_y)
+            pyautogui.scroll(-5, x=round(sw * 0.15) + off_x, y=round(sh * 0.5) + off_y)
             time.sleep(2)
 
     events.on_log(f"\n{'=' * 60}")

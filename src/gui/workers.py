@@ -15,7 +15,7 @@ from .state import get_state
 
 
 class BaseWorker(QThread):
-    progress = Signal(int, int)        # current, total
+    progress = Signal(int, int)  # current, total
     status = Signal(str)
     log = Signal(str)
     error = Signal(str)
@@ -38,7 +38,9 @@ class ScanWorker(BaseWorker):
 
             complete = sum(1 for s in status if s["complete"])
             missing = len(status) - complete
-            self.log.emit(f"Projekt: {len(status)} Songs, {complete} fertig, {missing} fehlend")
+            self.log.emit(
+                f"Projekt: {len(status)} Songs, {complete} fertig, {missing} fehlend"
+            )
 
             self.scan_complete.emit(status)
             self.finished_work.emit(True, f"{len(status)} Songs, {missing} fehlend")
@@ -48,11 +50,11 @@ class ScanWorker(BaseWorker):
 
 
 class DownloadWorker(BaseWorker):
-    song_started = Signal(int, int, int)   # num, x, y
-    song_completed = Signal(int, str)      # num, folder_name
-    song_duplicate = Signal(int, str, str) # num, name, duration
-    song_failed = Signal(int)              # num
-    icons_found = Signal(int, int)         # count, scroll_round
+    song_started = Signal(int, int, int)  # num, x, y
+    song_completed = Signal(int, str)  # num, folder_name
+    song_duplicate = Signal(int, str, str)  # num, name, duration
+    song_failed = Signal(int)  # num
+    icons_found = Signal(int, int)  # count, scroll_round
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -76,7 +78,9 @@ class DownloadWorker(BaseWorker):
             status = prepare_project(songs)
             complete = sum(1 for s in status if s["complete"])
             missing = len(status) - complete
-            self.log.emit(f"Projekt: {len(status)} Songs, {complete} fertig, {missing} fehlend")
+            self.log.emit(
+                f"Projekt: {len(status)} Songs, {complete} fertig, {missing} fehlend"
+            )
 
             set_monitor(cfg.monitor_index)
             success = run_task(
@@ -99,11 +103,13 @@ class DownloadWorker(BaseWorker):
 
 
 class CertWorker(BaseWorker):
-    song_started = Signal(int, int, int)   # num, x, y
-    song_completed = Signal(int, str)      # num, folder_name
-    song_duplicate = Signal(int, str, str) # num, name, duration (unused but needed for SignalEvents)
-    song_failed = Signal(int)              # num
-    icons_found = Signal(int, int)         # count, scroll_round
+    song_started = Signal(int, int, int)  # num, x, y
+    song_completed = Signal(int, str)  # num, folder_name
+    song_duplicate = Signal(
+        int, str, str
+    )  # num, name, duration (unused but needed for SignalEvents)
+    song_failed = Signal(int)  # num
+    icons_found = Signal(int, int)  # count, scroll_round
 
     def __init__(self, parent=None):
         super().__init__(parent)

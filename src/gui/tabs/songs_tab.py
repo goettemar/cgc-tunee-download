@@ -43,14 +43,18 @@ class SongsTab(QWidget):
         header.addWidget(self._refresh_btn)
         header.addStretch()
         self._count_label = QLabel("")
-        self._count_label.setStyleSheet(f"font-weight: bold; color: {COLORS['text_muted']};")
+        self._count_label.setStyleSheet(
+            f"font-weight: bold; color: {COLORS['text_muted']};"
+        )
         header.addWidget(self._count_label)
         layout.addLayout(header)
 
         # Table
         self._table = QTableWidget()
         self._table.setColumnCount(6)
-        self._table.setHorizontalHeaderLabels(["#", "Song Name", "Dauer", "Dateien", "MB", "Cert"])
+        self._table.setHorizontalHeaderLabels(
+            ["#", "Song Name", "Dauer", "Dateien", "MB", "Cert"]
+        )
         self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self._table.setAlternatingRowColors(True)
@@ -85,7 +89,9 @@ class SongsTab(QWidget):
         certs = 0
         for folder in folders:
             all_files = list(folder.iterdir())
-            has_files = any(f.suffix.lower() in _SONG_EXTS for f in all_files if f.is_file())
+            has_files = any(
+                f.suffix.lower() in _SONG_EXTS for f in all_files if f.is_file()
+            )
             has_cert = any(f.suffix.lower() == ".pdf" for f in all_files if f.is_file())
             if has_files:
                 complete += 1
